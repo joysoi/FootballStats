@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@id/navigation_standings"
+        android:icon="@drawable/ic_league_table"
+        android:title="@string/league_standings" />
+
+    <item
+        android:id="@id/navigation_scorers"
+        android:icon="@drawable/ic_matches"
+        android:title="@string/scorers" />
+</menu>

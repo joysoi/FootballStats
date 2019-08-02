@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">FootballStats</string>
+    <string name="country_flag_desc">country_name</string>
+    <string name="title_activity_bottom_nav">BottomNavActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="league_standings">Standings</string>
+    <string name="scorers">Scorers</string>
+
+
+    <string name="position_text">Position</string>
+    <string name="name_text">Name</string>
+    <string name="points_text">Points</string>
+
+    <string name="team_name_text">Team Name</string>
+    <string name="goals_text">Goals</string>
+    <string name="player_name_text">Player Name</string>
+</resources>
