@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "team_table")
 public class Team {
+
     @PrimaryKey
     private int idTeam;
 

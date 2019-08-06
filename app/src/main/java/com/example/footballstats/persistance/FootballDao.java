@@ -10,14 +10,11 @@ import androidx.room.Query;
 import com.example.footballstats.models.Competitions;
 import com.example.footballstats.models.Player;
 import com.example.footballstats.models.Scorers;
+import com.example.footballstats.models.Standing;
 import com.example.footballstats.models.Table;
 import com.example.footballstats.models.Team;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.concurrent.Callable;
-
-import io.reactivex.Completable;
 
 @Dao
 public interface FootballDao {
@@ -35,19 +32,19 @@ public interface FootballDao {
 
 
     // Table Standings
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insertTableData(Table tableData);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long insertTableData(Table tableData);
 
     @Query("UPDATE standings_table SET position = :position, team = :team, points = :points " +
             "WHERE teamId = :teamId")
-    void updateTableData(int teamId, int position, Team team, int points);
+    int updateTableData(int teamId, int position, Team team, int points);
 
     @Query("SELECT * FROM standings_table ORDER BY points DESC")
     LiveData<List<Table>> getAllTableData();
 
 
     // Team names
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertTeamNames(Team teamName);
 
     @Query("UPDATE team_table SET teamId = :teamId, name= :name " +
@@ -59,7 +56,7 @@ public interface FootballDao {
 
 
     // Scorers
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertScorers(Scorers scorers);
 
     @Query("UPDATE scorers_table SET numberOfGoals = :numberOfGoals, team = :team, player = :player " +
@@ -71,7 +68,7 @@ public interface FootballDao {
 
 
     //Players
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertPlayers(Player player);
 
     @Query("UPDATE players_table SET playerId = :playerId, playerName= :playerName " +
@@ -83,7 +80,7 @@ public interface FootballDao {
 
 
     // Team names of scorers
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertScorersTeamNames(Team teamScorersName);
 
     @Query("SELECT * FROM team_table WHERE idTeam = :numOfGoals")

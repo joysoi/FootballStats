@@ -4,7 +4,7 @@ public class Constants {
     public static final String BASE_URL = "https://api.football-data.org";
     public static final String COMPETITIONS_INTENT = "111";
     public static final String DATABASE_NAME = "football_db";
-    public static final int REFRESH_TIME = 60 * 60 * 24;
+    public static final int REFRESH_TIME = 60 * 60 * 24 * 2; // 2 days in seconds
 
 }
 

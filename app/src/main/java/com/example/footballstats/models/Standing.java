@@ -1,14 +1,22 @@
 package com.example.footballstats.models;
 
 import androidx.annotation.Nullable;
+import androidx.room.Entity;
 import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+@Entity(tableName = "league_standings_table")
 public class Standing {
+
+    @PrimaryKey(autoGenerate = true)
+    @SerializedName("id")
+    @Expose
+    private int standingsId;
 
     @SerializedName("type")
     @Expose
@@ -26,19 +34,36 @@ public class Standing {
         this.type = type;
     }
 
+
+    public int getStandingsId() {
+        return standingsId;
+    }
+
+    public void setStandingsId(int standingsId) {
+        this.standingsId = standingsId;
+    }
+
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public List<Table> getTable() {
         return table;
     }
 
+    public void setTable(List<Table> table) {
+        this.table = table;
+    }
 
     @Override
     public String toString() {
         return "Standing{" +
-                "type='" + type + '\'' +
+                "standingsId=" + standingsId +
+                ", type='" + type + '\'' +
                 ", table=" + table +
                 '}';
     }

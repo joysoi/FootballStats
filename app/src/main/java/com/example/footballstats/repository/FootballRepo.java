@@ -11,9 +11,12 @@ import androidx.lifecycle.Observer;
 
 
 import com.example.footballstats.models.Competitions;
+import com.example.footballstats.models.Standing;
+import com.example.footballstats.models.Table;
 import com.example.footballstats.persistance.FootballDao;
 import com.example.footballstats.requests.FootballDataApi;
 import com.example.footballstats.requests.responses.Feed;
+import com.example.footballstats.requests.responses.LeagueStandings;
 import com.example.footballstats.util.Constants;
 import com.example.footballstats.util.NetworkBoundResource;
 
@@ -41,8 +44,11 @@ public class FootballRepo {
     private FootballDataApi footballDataApi;
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    //feed
+    //feed response
     private MediatorLiveData<Feed> feedMediatorLiveData = new MediatorLiveData<>();
+
+    //league standings response
+    private MediatorLiveData<LeagueStandings> leagueStandingsMediatorLiveData = new MediatorLiveData<>();
 
     @Inject
     public FootballRepo(FootballDao footballDao, FootballDataApi footballDataApi) {
@@ -73,19 +79,20 @@ public class FootballRepo {
             protected boolean shouldFetch(@Nullable List<Competitions> data) {
                 if (data != null) {
                     int currentTime = (int) System.currentTimeMillis() / 1000; // time in seconds
-                    for (Competitions competitions : data){
+                    for (Competitions competitions : data) {
                         Log.d(TAG, "currentTime: " + currentTime);
-                        int lastRefresh = competitions.getTimestamp();
+                        int lastRefresh = competitions.getTimestamp() / 1000;
                         Log.d(TAG, "lastRefresh: " + lastRefresh);
-                        Log.d(TAG, "shouldFetch: it's been " + ((currentTime - lastRefresh) / 60 / 60 / 24));
-                        if((currentTime - lastRefresh) >= Constants.REFRESH_TIME){
+                        Log.d(TAG, "shouldFetch: it's been " + ((currentTime - lastRefresh) / 60 / 60 / 24) +
+                                " seconds since last update");
+                        if ((currentTime - lastRefresh) >= Constants.REFRESH_TIME) {
                             return true;
                         }
                     }
                     Log.d(TAG, "shouldFetch: Should REFRESH List: " + true);
                     return true;
                 }
-                Log.d(TAG, "shouldFetch: Should REFRESH List " + false);
+                Log.d(TAG, "shouldFetch: Should NOT REFRESH List " + false);
                 return false;
             }
 
@@ -121,7 +128,6 @@ public class FootballRepo {
                 .create(new ObservableOnSubscribe<Competitions[]>() {
                     @Override
                     public void subscribe(ObservableEmitter<Competitions[]> emitter) throws Exception {
-                        Log.d(TAG, "subscribe insertOrUpdateCompetitions : called...");
                         if (!emitter.isDisposed()) {
                             emitter.onNext(competitions);
 
@@ -160,6 +166,94 @@ public class FootballRepo {
         return observableInsert;
     }
 
+
+    public LiveData<List<Table>> observeLeagueStandings(final String id) {
+        return new NetworkBoundResource<List<Table>, LeagueStandings>() {
+            @Override
+            protected void saveCallResult(@NonNull LeagueStandings item) {
+                if (item.getStandings() != null) {
+                    for (Standing standing : item.getStandings()) {
+                        if (standing.getType().equals("TOTAL")) {
+                            for (Table table : standing.getTable()) {
+                                insertTableStandings(table);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<Table> data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<Table>> loadFromDb() {
+                return footballDao.getAllTableData();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<LeagueStandings> createCall() {
+                final LiveData<LeagueStandings> source = LiveDataReactiveStreams
+                        .fromPublisher(footballDataApi.getLeagueStandingsResponse(id)
+                                .subscribeOn(Schedulers.io()));
+
+                leagueStandingsMediatorLiveData.addSource(source, new Observer<LeagueStandings>() {
+                    @Override
+                    public void onChanged(LeagueStandings leagueStandings) {
+                        leagueStandingsMediatorLiveData.setValue(leagueStandings);
+                        leagueStandingsMediatorLiveData.removeSource(source);
+                    }
+                });
+                return leagueStandingsMediatorLiveData;
+            }
+        }.getAsLiveData();
+    }
+
+
+    private void insertTableStandings(final Table table) {
+        Observable<Table> observableInsert = Observable
+                .create(new ObservableOnSubscribe<Table>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Table> emitter) throws Exception {
+                        if (!emitter.isDisposed()) {
+                            footballDao.insertTableData(table);
+                            emitter.onNext(table);
+                            emitter.onComplete();
+                        }
+                    }
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        observableInsert.subscribe(new io.reactivex.Observer<Table>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "onSubscribe: insertTableStandings called...");
+                disposable.add(d);
+            }
+
+            @Override
+            public void onNext(Table table) {
+                Log.d(TAG, "onNext: insertTableStandings: " +
+                        table);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, "onError: insertTableStandings", e);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete: insertTableStandings called...");
+            }
+        });
+
+    }
+
+//
 
 //    public Observable<Competitions[]> insertOrUpdateCompetitions(final List<Competitions> newCompList) {
 //        final Competitions[] competitions = new Competitions[newCompList.size()];

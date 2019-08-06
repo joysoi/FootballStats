@@ -11,9 +11,10 @@ import com.google.gson.annotations.SerializedName;
 @Entity(tableName = "standings_table")
 public class Table {
 
-    @PrimaryKey
+
     private int teamId;
 
+    @PrimaryKey(autoGenerate = true)
     @SerializedName("position")
     @Expose
     private Integer position;

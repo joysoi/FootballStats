@@ -18,7 +18,7 @@ public class StandingsListViewModel extends ViewModel {
 
     private static final String TAG = "StandingsListViewModel";
     private FootballRepo footballRepo;
-    private MediatorLiveData<List<Competitions>> mediatorLiveDataTest = new MediatorLiveData<>();
+    private MediatorLiveData<List<Competitions>> mediatorLiveData = new MediatorLiveData<>();
 
     @Inject
     StandingsListViewModel(FootballRepo footballRepo) {
@@ -28,15 +28,15 @@ public class StandingsListViewModel extends ViewModel {
 
     public LiveData<List<Competitions>> getFeed() {
         observeFeed();
-        return mediatorLiveDataTest;
+        return mediatorLiveData;
     }
 
-    public void observeFeed() {
+    private void observeFeed() {
         LiveData<List<Competitions>> resourceLiveData = footballRepo.observeFeed();
-        mediatorLiveDataTest.addSource(resourceLiveData, new Observer<List<Competitions>>() {
+        mediatorLiveData.addSource(resourceLiveData, new Observer<List<Competitions>>() {
             @Override
             public void onChanged(List<Competitions> listResource) {
-                mediatorLiveDataTest.setValue(listResource);
+                mediatorLiveData.setValue(listResource);
             }
         });
     }
