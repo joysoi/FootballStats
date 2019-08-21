@@ -14,7 +14,6 @@ import java.util.List;
 public class Standing {
 
     @PrimaryKey(autoGenerate = true)
-    @SerializedName("id")
     @Expose
     private int standingsId;
 
@@ -24,7 +23,9 @@ public class Standing {
 
     @SerializedName("table")
     @Expose
-    private List<Table> table = null;
+    private List<Table> tableList = null;
+
+    private int timestamp;
 
     public Standing() {
     }
@@ -51,12 +52,21 @@ public class Standing {
         this.type = type;
     }
 
-    public List<Table> getTable() {
-        return table;
+    public List<Table> getTableList() {
+        return tableList;
     }
 
-    public void setTable(List<Table> table) {
-        this.table = table;
+    public void setTableList(List<Table> tableList) {
+        this.tableList = tableList;
+    }
+
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -64,7 +74,7 @@ public class Standing {
         return "Standing{" +
                 "standingsId=" + standingsId +
                 ", type='" + type + '\'' +
-                ", table=" + table +
+                ", tableList=" + tableList +
                 '}';
     }
 

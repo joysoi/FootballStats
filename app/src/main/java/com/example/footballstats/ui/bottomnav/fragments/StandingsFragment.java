@@ -2,6 +2,7 @@ package com.example.footballstats.ui.bottomnav.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,7 @@ public class StandingsFragment extends DaggerFragment {
         standingsFragmentViewModel = ViewModelProviders.of(this, providerFactory)
                 .get(StandingsFragmentViewModel.class);
         if (competitions != null) {
-            Log.d(TAG, "onViewCreated: competitionId is: " + competitions.getCompetitionId());
+            Log.d(TAG, "onViewCreated: ID: " + competitions.getCompetitionId());
             subscribeObservers(competitions.getCompetitionId());
         }
 
@@ -67,10 +68,12 @@ public class StandingsFragment extends DaggerFragment {
         recyclerView.setAdapter(standingsAdapter);
     }
 
-    private void subscribeObservers(int competitionId) {
-        standingsFragmentViewModel.getLeagueStandings(String.valueOf(competitionId))
+    private void subscribeObservers(final int competitionId) {
+        Log.d(TAG, "observeLeagueStandings: ID: " + competitionId);
+        standingsFragmentViewModel.getLeagueStandings(competitionId)
                 .removeObservers(getViewLifecycleOwner());
-        standingsFragmentViewModel.getLeagueStandings(String.valueOf(competitionId))
+
+        standingsFragmentViewModel.getLeagueStandings(competitionId)
                 .observe(getViewLifecycleOwner(), new Observer<List<Table>>() {
                     @Override
                     public void onChanged(List<Table> standing) {

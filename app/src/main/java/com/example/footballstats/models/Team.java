@@ -8,15 +8,15 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "team_table")
+//@Entity(tableName = "team_table")
 public class Team {
 
-    @PrimaryKey
-    private int idTeam;
-
-    @SerializedName("id")
-    @Expose
-    private int teamId;
+//    @PrimaryKey
+//    private int idTeam;
+//
+//    @SerializedName("id")
+//    @Expose
+//    private int teamId;
 
     @SerializedName("name")
     @Expose
@@ -30,21 +30,21 @@ public class Team {
         this.name = name;
     }
 
-    public int getIdTeam() {
-        return idTeam;
-    }
-
-    public void setIdTeam(int idTeam) {
-        this.idTeam = idTeam;
-    }
-
-    public int getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(int teamId) {
-        this.teamId = teamId;
-    }
+//    public int getIdTeam() {
+//        return idTeam;
+//    }
+//
+//    public void setIdTeam(int idTeam) {
+//        this.idTeam = idTeam;
+//    }
+//
+//    public int getTeamId() {
+//        return teamId;
+//    }
+//
+//    public void setTeamId(int teamId) {
+//        this.teamId = teamId;
+//    }
 
     public String getName() {
         return name;
@@ -54,24 +54,16 @@ public class Team {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "Team{" +
-                "teamId=" + teamId +
-                ", name='" + name + '\'' +
-                '}';
-    }
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if(obj == null){
+        if (obj == null) {
             return false;
         }
-        if(getClass() != obj.getClass()){
+        if (getClass() != obj.getClass()) {
             return false;
         }
         Team team = (Team) obj;
-        return team.getIdTeam() == getIdTeam() &&
-                team.getName().equals(getName());
+        return team.getName().equals(getName());
     }
 }

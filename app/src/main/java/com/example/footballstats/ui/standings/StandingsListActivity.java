@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.footballstats.R;
 import com.example.footballstats.adapters.CompetitionsAdapter;
@@ -67,6 +68,7 @@ public class StandingsListActivity extends DaggerAppCompatActivity {
             public void competitionListClick(Competitions competitions) {
                 Intent intent = new Intent(StandingsListActivity.this, BottomNavActivity.class);
                 intent.putExtra(Constants.COMPETITIONS_INTENT, competitions);
+                Log.d(TAG, "competitionListClick: ID:" + competitions.getCompetitionId());
                 startActivity(intent);
             }
         });

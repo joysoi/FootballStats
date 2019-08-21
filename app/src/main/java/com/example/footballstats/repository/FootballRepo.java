@@ -20,6 +20,7 @@ import com.example.footballstats.requests.responses.LeagueStandings;
 import com.example.footballstats.util.Constants;
 import com.example.footballstats.util.NetworkBoundResource;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,8 +48,6 @@ public class FootballRepo {
     //feed response
     private MediatorLiveData<Feed> feedMediatorLiveData = new MediatorLiveData<>();
 
-    //league standings response
-    private MediatorLiveData<LeagueStandings> leagueStandingsMediatorLiveData = new MediatorLiveData<>();
 
     @Inject
     public FootballRepo(FootballDao footballDao, FootballDataApi footballDataApi) {
@@ -65,13 +64,13 @@ public class FootballRepo {
                     List<String> availableCompetitionsIds = Arrays.asList("2021", "2019", "2002", "2003", "2017", "2015");
                     for (Competitions compItems : item.getCompetitionsList()) {
                         String compId = String.valueOf(compItems.getCompetitionId());
+                        Log.d(TAG, "saveCallResult: ID: " + compId);
                         if (availableCompetitionsIds.contains(compId)) {
                             compItems.setTimestamp((int) System.currentTimeMillis() / 1000); // in seconds
                             newCompList.add(compItems);
+                            insertCompetitions(newCompList);
                         }
                     }
-                    Log.d(TAG, "saveCallResult: newCompList: " + newCompList.size());
-                    insertCompetitions(newCompList);
                 }
             }
 
@@ -121,21 +120,20 @@ public class FootballRepo {
         }.getAsLiveData();
     }
 
-    public Observable<Competitions[]> insertCompetitions(final List<Competitions> newCompList) {
+    private Observable<Competitions[]> insertCompetitions(final List<Competitions> newCompList) {
         final Competitions[] competitions = new Competitions[newCompList.size()];
-
         Observable<Competitions[]> observableInsert = Observable
                 .create(new ObservableOnSubscribe<Competitions[]>() {
                     @Override
                     public void subscribe(ObservableEmitter<Competitions[]> emitter) throws Exception {
                         if (!emitter.isDisposed()) {
                             emitter.onNext(competitions);
-
                         }
                         if (!emitter.isDisposed()) {
-                            footballDao.insertCompetitions((newCompList.toArray(competitions)));
+                            footballDao.insertCompetitions((newCompList).toArray(competitions));
                             emitter.onComplete();
                         }
+
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -166,17 +164,22 @@ public class FootballRepo {
         return observableInsert;
     }
 
-
-    public LiveData<List<Table>> observeLeagueStandings(final String id) {
+    public LiveData<List<Table>> observeLeagueStandings(final int id) {
+        Log.d(TAG, "observeLeagueStandings: ID: " + id);
         return new NetworkBoundResource<List<Table>, LeagueStandings>() {
             @Override
             protected void saveCallResult(@NonNull LeagueStandings item) {
+                List<Table> tableList = new ArrayList<>();
+                int competitionId = item.getCompetition().getCompetitionId();
+                Log.d(TAG, "saveCallResult: final int id: " + id);
+                Log.d(TAG, "saveCallResult: League standings id: " + competitionId);
                 if (item.getStandings() != null) {
                     for (Standing standing : item.getStandings()) {
                         if (standing.getType().equals("TOTAL")) {
-                            for (Table table : standing.getTable()) {
-                                insertTableStandings(table);
-                            }
+                            standing.setTimestamp((int) System.currentTimeMillis() / 1000);
+                            tableList.addAll(standing.getTableList());
+                            insertTableStandings(tableList);
+                            Log.d(TAG, "saveCallResult: TABLE LIST: " + tableList);
                         }
                     }
                 }
@@ -196,38 +199,41 @@ public class FootballRepo {
             @NonNull
             @Override
             protected LiveData<LeagueStandings> createCall() {
-                final LiveData<LeagueStandings> source = LiveDataReactiveStreams
-                        .fromPublisher(footballDataApi.getLeagueStandingsResponse(id)
+                Log.d(TAG, "observeLeagueStandings: ID: " + id);
+                return LiveDataReactiveStreams
+                        .fromPublisher(footballDataApi.getLeagueStandingsResponse(String.valueOf(id))
                                 .subscribeOn(Schedulers.io()));
-
-                leagueStandingsMediatorLiveData.addSource(source, new Observer<LeagueStandings>() {
-                    @Override
-                    public void onChanged(LeagueStandings leagueStandings) {
-                        leagueStandingsMediatorLiveData.setValue(leagueStandings);
-                        leagueStandingsMediatorLiveData.removeSource(source);
-                    }
-                });
-                return leagueStandingsMediatorLiveData;
             }
         }.getAsLiveData();
     }
 
 
-    private void insertTableStandings(final Table table) {
-        Observable<Table> observableInsert = Observable
-                .create(new ObservableOnSubscribe<Table>() {
+    private void insertTableStandings(final List<Table> tableList) {
+        final Table[] tables = new Table[tableList.size()];
+        Observable<Table[]> observableInsert = Observable
+                .create(new ObservableOnSubscribe<Table[]>() {
                     @Override
-                    public void subscribe(ObservableEmitter<Table> emitter) throws Exception {
+                    public void subscribe(ObservableEmitter<Table[]> emitter) throws Exception {
                         if (!emitter.isDisposed()) {
-                            footballDao.insertTableData(table);
-                            emitter.onNext(table);
+                            int index = 0;
+                            for (long rowId : footballDao.insertTableData((tableList.toArray(tables)))) {
+                                if (rowId == -1) {
+                                    updateTableStandings(
+                                            tables[index].getPosition(),
+                                            tables[index].getTeam().getName(),
+                                            tables[index].getPoints()
+                                    );
+                                }
+                                index++;
+                            }
+                            emitter.onNext(tables);
                             emitter.onComplete();
                         }
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
-        observableInsert.subscribe(new io.reactivex.Observer<Table>() {
+        observableInsert.subscribe(new io.reactivex.Observer<Table[]>() {
             @Override
             public void onSubscribe(Disposable d) {
                 Log.d(TAG, "onSubscribe: insertTableStandings called...");
@@ -235,9 +241,9 @@ public class FootballRepo {
             }
 
             @Override
-            public void onNext(Table table) {
+            public void onNext(Table[] table) {
                 Log.d(TAG, "onNext: insertTableStandings: " +
-                        table);
+                        Arrays.toString(table));
             }
 
             @Override
@@ -253,101 +259,50 @@ public class FootballRepo {
 
     }
 
-//
 
-//    public Observable<Competitions[]> insertOrUpdateCompetitions(final List<Competitions> newCompList) {
-//        final Competitions[] competitions = new Competitions[newCompList.size()];
-//
-//        Observable<Competitions[]> observableInsert = Observable
-//                .create(new ObservableOnSubscribe<Competitions[]>() {
-//                    @Override
-//                    public void subscribe(ObservableEmitter<Competitions[]> emitter) throws Exception {
-//                        Log.d(TAG, "subscribe insertOrUpdateUser : called...");
-//                        if (!emitter.isDisposed()) {
-//                            int index = 0;
-//                            for (long rowId : footballDao.insertCompetitions((newCompList.toArray(competitions)))) {
-//                                if (rowId == -1) {
-//                                    updateCompetitions(
-//                                            competitions[index].getCompetitionId(),
-//                                            competitions[index].getCompetitionName()
-//                                    );
-//                                }
-//                                index++;
-//                            }
-//                            emitter.onNext(competitions);
-//                            emitter.onComplete();
-//                        }
-//
-//                    }
-//                }).subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread());
-//        observableInsert.subscribe(new io.reactivex.Observer<Competitions[]>() {
-//            @Override
-//            public void onSubscribe(Disposable d) {
-//                Log.d(TAG, "onSubscribe observableInsert: called...");
-//                disposable.add(d);
-//            }
-//
-//            @Override
-//            public void onNext(Competitions[] competitions) {
-//                Log.d(TAG, "onNext: competitions: " + Arrays.toString(competitions));
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Log.e(TAG, "onError: ", e);
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//                Log.d(TAG, "onComplete observableInsert: called...");
-//            }
-//        });
-//
-//        return observableInsert;
-//    }
+    private int updateTableStandings(final int position, final String teamName, final int points) {
+        Observable<Table> observableUpdate = Observable
+                .create(new ObservableOnSubscribe<Table>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Table> emitter) throws Exception {
+                        if (!emitter.isDisposed()) {
+                            footballDao.updateTableData(
+                                    position,
+                                    teamName,
+                                    points
+                            );
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
 
-//    public int updateCompetitions(final int competitionId, final String competitionName) {
-//        Observable<Competitions> observableUpdate = Observable
-//                .create(new ObservableOnSubscribe<Competitions>() {
-//                    @Override
-//                    public void subscribe(ObservableEmitter<Competitions> emitter) throws Exception {
-//                        if (!emitter.isDisposed()) {
-//                            footballDao.updateCompetitions(competitionId,
-//                                    competitionName);
-//                            emitter.onComplete();
-//                        }
-//                    }
-//                })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread());
-//
-//        observableUpdate.subscribe(new io.reactivex.Observer<Competitions>() {
-//            @Override
-//            public void onSubscribe(Disposable d) {
-//                Log.d(TAG, "onSubscribe observableUpdate: called...");
-//                disposable.add(d);
-//            }
-//
-//            @Override
-//            public void onNext(Competitions competitions) {
-//                Log.d(TAG, "onNext: competitions updated: " + competitions.getCompetitionName());
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Log.e(TAG, "onError: ", e);
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//                Log.d(TAG, "onComplete observableUpdate: called...");
-//            }
-//        });
-//
-//        // int returned for testing purposes only
-//        return competitionId;
-//    }
+        observableUpdate.subscribe(new io.reactivex.Observer<Table>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "onSubscribe: updateTableStandings called");
+                disposable.add(d);
+            }
+
+            @Override
+            public void onNext(Table table) {
+                Log.d(TAG, "onNext: team UPDATED " + table.getTeam());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, "onError: updateTableStandings: ", e);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete: updateTableStandings: called...");
+            }
+        });
+
+        // int returned for testing purposes only
+        return points;
+    }
 
     public void unsubscribeObservables() {
         if (disposable != null) {

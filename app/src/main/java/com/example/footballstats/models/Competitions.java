@@ -13,8 +13,11 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 @Entity(tableName = "competitions_table")
 public class Competitions implements Parcelable {
+
 
     @PrimaryKey
     @SerializedName("id")
@@ -25,15 +28,21 @@ public class Competitions implements Parcelable {
     @Expose
     private String competitionName;
 
+
     private int timestamp;
 
     public Competitions() {
     }
 
     @Ignore
-    public Competitions(String competitionName) {
-        this.competitionName = competitionName;
+    public Competitions(int competitionId) {
+        this.competitionId = competitionId;
     }
+
+//    @Ignore
+//    public Competitions(String competitionName) {
+//        this.competitionName = competitionName;
+//    }
 
     @Ignore
     public Competitions(int competitionId, @NonNull String competitionName, int timestamp) {

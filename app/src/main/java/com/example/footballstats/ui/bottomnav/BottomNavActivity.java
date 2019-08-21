@@ -15,6 +15,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import dagger.android.support.DaggerAppCompatActivity;
@@ -33,7 +34,7 @@ public class BottomNavActivity extends DaggerAppCompatActivity implements Bottom
             Competitions competitions = getIntent().getParcelableExtra(Constants.COMPETITIONS_INTENT);
             bundle = new Bundle();
             bundle.putParcelable(Constants.COMPETITIONS_INTENT, competitions);
-            Log.d(TAG, "getIncomingIntent: Comp id:" + competitions);
+            Log.d(TAG, "getIncomingIntent: ID:" + competitions.getCompetitionId());
         }
         bottomNavigationView = findViewById(R.id.nav_view);
         initNavigationController();
@@ -70,6 +71,4 @@ public class BottomNavActivity extends DaggerAppCompatActivity implements Bottom
         }
         return true;
     }
-
-
 }
