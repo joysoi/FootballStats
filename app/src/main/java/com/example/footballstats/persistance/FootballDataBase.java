@@ -13,9 +13,8 @@ import com.example.footballstats.models.Team;
 import com.example.footballstats.models.TestModel;
 
 @Database(entities = {Competitions.class, Table.class, Scorers.class, Player.class, Standing.class, TestModel.class},
-        version = 217, exportSchema = false)
+        version = 4)
 @TypeConverters({PlayerConverter.class, TeamConverter.class, TableListConverter.class, StandingConverter.class, StandingsListConverter.class})
 public abstract class FootballDataBase extends RoomDatabase {
-
     public abstract FootballDao getFootballDao();
 }

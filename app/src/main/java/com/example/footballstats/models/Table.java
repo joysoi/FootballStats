@@ -11,10 +11,7 @@ import com.google.gson.annotations.SerializedName;
 @Entity(tableName = "standings_table")
 public class Table {
 
-
-    private int teamId;
-
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @SerializedName("position")
     @Expose
     private Integer position;
@@ -36,14 +33,6 @@ public class Table {
         this.position = position;
         this.team = team;
         this.points = points;
-    }
-
-    public int getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(int teamId) {
-        this.teamId = teamId;
     }
 
     public Integer getPosition() {
@@ -73,8 +62,7 @@ public class Table {
     @Override
     public String toString() {
         return "Table{" +
-                "teamId=" + teamId +
-                ", position=" + position +
+                "position=" + position +
                 ", team=" + team +
                 ", points=" + points +
                 '}';
@@ -89,8 +77,7 @@ public class Table {
             return false;
         }
         Table table = (Table) obj;
-        return table.getTeamId() == getTeamId() &&
-                table.getPosition().equals(getPosition())
+        return table.getPosition().equals(getPosition())
                 && table.getPoints().equals(getPoints());
     }
 }

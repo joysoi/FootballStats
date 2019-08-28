@@ -56,7 +56,6 @@ public class StandingsFragment extends DaggerFragment {
         standingsFragmentViewModel = ViewModelProviders.of(this, providerFactory)
                 .get(StandingsFragmentViewModel.class);
         if (competitions != null) {
-            Log.d(TAG, "onViewCreated: ID: " + competitions.getCompetitionId());
             subscribeObservers(competitions.getCompetitionId());
         }
 
@@ -69,16 +68,17 @@ public class StandingsFragment extends DaggerFragment {
     }
 
     private void subscribeObservers(final int competitionId) {
-        Log.d(TAG, "observeLeagueStandings: ID: " + competitionId);
         standingsFragmentViewModel.getLeagueStandings(competitionId)
                 .removeObservers(getViewLifecycleOwner());
 
         standingsFragmentViewModel.getLeagueStandings(competitionId)
                 .observe(getViewLifecycleOwner(), new Observer<List<Table>>() {
                     @Override
-                    public void onChanged(List<Table> standing) {
-                        Log.d(TAG, "onChanged: Table List: " + standing);
-                        standingsAdapter.submitList(standing);
+                    public void onChanged(List<Table> tableList) {
+                        if (tableList != null) {
+                            Log.d(TAG, "onChanged: TABLE LIST: " + tableList);
+                            standingsAdapter.submitList(tableList);
+                        }
                     }
                 });
     }

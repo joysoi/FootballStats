@@ -10,9 +10,9 @@ import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "scorers_table")
 public class Scorers {
-    @PrimaryKey()
-    private int id_Scorers;
 
+
+    @PrimaryKey
     @SerializedName("numberOfGoals")
     @Expose
     private int numberOfGoals;
@@ -41,13 +41,6 @@ public class Scorers {
         this.team = team;
     }
 
-    public int getId_Scorers() {
-        return id_Scorers;
-    }
-
-    public void setId_Scorers(int id_Scorers) {
-        this.id_Scorers = id_Scorers;
-    }
 
     public Player getPlayer() {
         return player;
@@ -76,8 +69,7 @@ public class Scorers {
     @Override
     public String toString() {
         return "Scorers{" +
-                "id_Scorers=" + id_Scorers +
-                ", numberOfGoals=" + numberOfGoals +
+                "numberOfGoals=" + numberOfGoals +
                 ", player=" + player +
                 ", team=" + team +
                 '}';
@@ -93,9 +85,8 @@ public class Scorers {
             return false;
         }
         Scorers scorers = (Scorers) obj;
-        return scorers.getId_Scorers() == getId_Scorers() &&
-                scorers.getPlayer().equals(getPlayer()) &&
-                scorers.getTeam().equals(getTeam())&&
+        return scorers.getPlayer().equals(getPlayer()) &&
+                scorers.getTeam().equals(getTeam()) &&
                 scorers.getNumberOfGoals() == getNumberOfGoals();
     }
 }

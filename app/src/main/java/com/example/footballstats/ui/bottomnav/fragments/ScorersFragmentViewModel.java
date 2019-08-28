@@ -6,8 +6,11 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.footballstats.models.Scorers;
 import com.example.footballstats.repository.FootballRepo;
 import com.example.footballstats.requests.responses.ScorersStandings;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -17,13 +20,18 @@ public class ScorersFragmentViewModel extends ViewModel {
     private FootballRepo footballRepo;
 
     @Inject
-    public ScorersFragmentViewModel(FootballRepo footballRepo) {
+    ScorersFragmentViewModel(FootballRepo footballRepo) {
         Log.d(TAG, "ScorersFragmentViewModel: is ready");
         this.footballRepo = footballRepo;
     }
 
-    LiveData<ScorersStandings> observeScorersFromViewModel(String id) {
-//        return footballRepo.observeScorersFromRepo(id);
-        return null;
+    LiveData<List<Scorers>> observeScorersFromViewModel(int id) {
+        return footballRepo.observeScorers(id);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        footballRepo.unsubscribeObservables();
     }
 }

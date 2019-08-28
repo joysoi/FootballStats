@@ -17,9 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.footballstats.R;
 import com.example.footballstats.adapters.ScorersAdapter;
 import com.example.footballstats.models.Competitions;
+import com.example.footballstats.models.Scorers;
 import com.example.footballstats.requests.responses.ScorersStandings;
 import com.example.footballstats.util.Constants;
 import com.example.footballstats.viewmodels.ViewModelProviderFactory;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,6 +34,7 @@ public class ScorersFragment extends DaggerFragment {
     private ScorersFragmentViewModel scorersFragmentViewModel;
     private RecyclerView recyclerView;
     private ScorersAdapter scorersAdapter;
+    private Competitions competitions;
 
     @Inject
     ViewModelProviderFactory providerFactory;
@@ -42,6 +46,9 @@ public class ScorersFragment extends DaggerFragment {
         View view = inflater.inflate(R.layout.fragment_scorers, container, false);
         recyclerView = view.findViewById(R.id.recyclerViewScorers);
         initRecyclerView();
+        if (getArguments() != null) {
+            competitions = getArguments().getParcelable(Constants.COMPETITIONS_INTENT);
+        }
         return view;
     }
 
@@ -50,13 +57,9 @@ public class ScorersFragment extends DaggerFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         scorersFragmentViewModel = ViewModelProviders.of(this, providerFactory)
                 .get(ScorersFragmentViewModel.class);
-        Toast.makeText(getActivity(), "this is Scorers Fragment", Toast.LENGTH_SHORT).show();
-        if (getArguments() != null) {
-            Competitions competitions = getArguments().getParcelable(Constants.COMPETITIONS_INTENT);
-            Log.d(TAG, "onViewCreated: comp: " + competitions);
-            if (competitions != null) {
-//                subscribeObservers(competitions.getCompetitionId());
-            }
+        if (competitions != null) {
+            Log.d(TAG, "onViewCreated: ID: " + competitions.getCompetitionId());
+            subscribeObservers(competitions.getCompetitionId());
         }
     }
 
@@ -67,14 +70,17 @@ public class ScorersFragment extends DaggerFragment {
     }
 
     private void subscribeObservers(int compId) {
-        scorersFragmentViewModel.observeScorersFromViewModel(String.valueOf(compId)).removeObservers(getViewLifecycleOwner());
-        scorersFragmentViewModel.observeScorersFromViewModel(String.valueOf(compId))
-                .observe(getViewLifecycleOwner(), new Observer<ScorersStandings>() {
+        scorersFragmentViewModel.observeScorersFromViewModel(compId)
+                .removeObservers(getViewLifecycleOwner());
+        scorersFragmentViewModel.observeScorersFromViewModel(compId)
+                .observe(getViewLifecycleOwner(), new Observer<List<Scorers>>() {
                     @Override
-                    public void onChanged(ScorersStandings scorersStandings) {
-                        Log.d(TAG, "onChanged: scorers info: " + scorersStandings);
-                        Log.d(TAG, "onChanged: scorers info list: " + scorersStandings.getScorersList());
-                        scorersAdapter.submitList(scorersStandings.getScorersList());
+                    public void onChanged(List<Scorers> scorersList) {
+                        if (scorersList != null) {
+                            Log.d(TAG, "onChanged: SCORERS LIST:"
+                            + scorersList);
+                            scorersAdapter.submitList(scorersList);
+                        }
                     }
                 });
     }

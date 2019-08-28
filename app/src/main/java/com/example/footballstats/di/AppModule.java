@@ -39,8 +39,7 @@ public class AppModule {
                 application,
                 FootballDataBase.class,
                 Constants.DATABASE_NAME
-        )
-                .fallbackToDestructiveMigration()
+        ).fallbackToDestructiveMigration()
                 .build();
     }
 

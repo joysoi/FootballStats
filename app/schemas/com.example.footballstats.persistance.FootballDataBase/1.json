@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "08c7dacb3edf4c8c92273db8def65396",
+    "identityHash": "a19f383fab1ab1d6cb51b1e63b1e2498",
     "entities": [
       {
         "tableName": "competitions_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`competitionId` INTEGER NOT NULL, `competitionName` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`competitionId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`competitionId` INTEGER NOT NULL, `competitionName` TEXT, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`competitionId`))",
         "fields": [
           {
             "fieldPath": "competitionId",
@@ -18,7 +18,7 @@
             "fieldPath": "competitionName",
             "columnName": "competitionName",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "timestamp",
@@ -37,47 +37,9 @@
         "foreignKeys": []
       },
       {
-        "tableName": "team_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idTeam` INTEGER NOT NULL, `teamId` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`idTeam`))",
-        "fields": [
-          {
-            "fieldPath": "idTeam",
-            "columnName": "idTeam",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "teamId",
-            "columnName": "teamId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": false
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "idTeam"
-          ],
-          "autoGenerate": false
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
         "tableName": "standings_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`teamId` INTEGER NOT NULL, `position` INTEGER, `team` TEXT, `points` INTEGER, PRIMARY KEY(`teamId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`position` INTEGER, `team` TEXT, `points` INTEGER, PRIMARY KEY(`position`))",
         "fields": [
-          {
-            "fieldPath": "teamId",
-            "columnName": "teamId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "position",
             "columnName": "position",
@@ -99,7 +61,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "teamId"
+            "position"
           ],
           "autoGenerate": false
         },
@@ -108,14 +70,8 @@
       },
       {
         "tableName": "scorers_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id_Scorers` INTEGER NOT NULL, `numberOfGoals` INTEGER NOT NULL, `player` TEXT, `team` TEXT, PRIMARY KEY(`id_Scorers`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`numberOfGoals` INTEGER NOT NULL, `player` TEXT, `team` TEXT, PRIMARY KEY(`numberOfGoals`))",
         "fields": [
-          {
-            "fieldPath": "id_Scorers",
-            "columnName": "id_Scorers",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "numberOfGoals",
             "columnName": "numberOfGoals",
@@ -137,7 +93,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id_Scorers"
+            "numberOfGoals"
           ],
           "autoGenerate": false
         },
@@ -177,6 +133,44 @@
         "foreignKeys": []
       },
       {
+        "tableName": "league_standings_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`standingsId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT, `tableList` TEXT, `timestamp` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "standingsId",
+            "columnName": "standingsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tableList",
+            "columnName": "tableList",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "standingsId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "test_table",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`id`))",
         "fields": [
@@ -206,7 +200,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"08c7dacb3edf4c8c92273db8def65396\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a19f383fab1ab1d6cb51b1e63b1e2498')"
     ]
   }
 }

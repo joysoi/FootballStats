@@ -22,7 +22,7 @@ public class StandingsAdapter extends ListAdapter<Table, StandingsAdapter.ViewHo
     private static final DiffUtil.ItemCallback<Table> DIFF_CALLBACK = new DiffUtil.ItemCallback<Table>() {
         @Override
         public boolean areItemsTheSame(@NonNull Table oldItem, @NonNull Table newItem) {
-            return oldItem.getPosition().equals(newItem.getPosition());
+            return false;
         }
 
         @Override

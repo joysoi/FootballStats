@@ -15,30 +15,41 @@ import androidx.lifecycle.Observer;
 public abstract class NetworkBoundResource<CacheObject, RequestObject> {
 
     private static final String TAG = "NetworkBoundResource";
-    private MediatorLiveData<CacheObject> results = new MediatorLiveData<>();
-
+    private MediatorLiveData<CacheObject> result = new MediatorLiveData<>();
 
     protected NetworkBoundResource() {
         init();
     }
 
+
     private void init() {
-
-        //observe LiveData source from DB
+        // Observe LiveData source from local db
         final LiveData<CacheObject> dbSource = loadFromDb();
+        Log.d(TAG, "init: DB: " + dbSource.getValue());
+        Log.d(TAG, "init: DB: " + loadFromDb().getValue());
 
-        results.addSource(dbSource, new Observer<CacheObject>() {
+        result.addSource(dbSource, new Observer<CacheObject>() {
             @Override
-            public void onChanged(CacheObject cacheObject) {
-                results.removeSource(dbSource);
+            public void onChanged(@Nullable CacheObject CacheObject) {
+                Log.d(TAG, "onChanged: CACHE OBJECT: " + CacheObject);
+                // Remove observer from local db. Need to decide if read local db or network
+                result.removeSource(dbSource);
 
-                if (shouldFetch(cacheObject)) {
+                // get data from network if conditions in shouldFetch(boolean) are true
+                if (shouldFetch(CacheObject)) {
+                    Log.d(TAG, "onChanged: CACHE OBJECT: " + CacheObject);
+                    // get data from network
+                    Log.d(TAG, "onChanged: SHOULD FETCH: " + true);
                     fetchFromNetwork(dbSource);
-                } else {
-                    results.addSource(dbSource, new Observer<CacheObject>() {
+                    Log.d(TAG, "onChanged: FETCH FROM NETWORK: " + dbSource.getValue());
+                } else { // Otherwise read data from local db
+                    Log.d(TAG, "onChanged: SHOULD FETCH: " + false);
+                    Log.d(TAG, "onChanged: DB SOURCE: " + dbSource.getValue());
+                    result.addSource(dbSource, new Observer<CacheObject>() {
                         @Override
-                        public void onChanged(CacheObject cacheObject) {
-                            setValue(cacheObject);
+                        public void onChanged(@Nullable CacheObject CacheObject) {
+                            setValue(CacheObject);
+                            Log.d(TAG, "onChanged: SET VALUE: " + CacheObject);
                         }
                     });
                 }
@@ -57,33 +68,50 @@ public abstract class NetworkBoundResource<CacheObject, RequestObject> {
      * @param dbSource
      */
 
+
     private void fetchFromNetwork(final LiveData<CacheObject> dbSource) {
-        Log.d(TAG, "fetchFromNetwork: called...");
+        Log.d(TAG, "fetchFromNetwork: called.");
+
+        result.addSource(dbSource, new Observer<CacheObject>() {
+            @Override
+            public void onChanged(@Nullable CacheObject CacheObject) {
+                setValue(CacheObject);
+            }
+        });
+
 
         final LiveData<RequestObject> apiResponse = createCall();
 
-        results.addSource(apiResponse, new Observer<RequestObject>() {
+        result.addSource(apiResponse, new Observer<RequestObject>() {
             @Override
-            public void onChanged(final RequestObject RequestObjectApiResponse) {
-                results.removeSource(dbSource);
-                results.removeSource(apiResponse);
+            public void onChanged(@Nullable final RequestObject RequestObjectApiResponse) {
+                result.removeSource(dbSource);
+                result.removeSource(apiResponse);
 
-                // called on worker thread
-                saveCallResult(RequestObjectApiResponse);
-                // called on main thread
-                results.addSource(loadFromDb(), new Observer<CacheObject>() {
+                // save response to local db
+                if (RequestObjectApiResponse != null) {
+                    saveCallResult(RequestObjectApiResponse);
+                    Log.d(TAG, "onChanged: RequestObjectApiResponse: " + RequestObjectApiResponse);
+                }
+
+                // observe local db again since new result from network will have been saved
+                result.addSource(loadFromDb(), new Observer<CacheObject>() {
                     @Override
-                    public void onChanged(CacheObject cacheObject) {
-                        setValue(cacheObject);
+                    public void onChanged(@Nullable CacheObject CacheObject) {
+                        Log.d(TAG, "onChanged: LoadFromDB: " + loadFromDb().getValue());
+                        Log.d(TAG, "onChanged: CACHE OBJECT: " + CacheObject);
+                        setValue(CacheObject);
                     }
                 });
+
             }
         });
     }
 
+
     private void setValue(CacheObject newValue) {
-        if (results.getValue() != newValue) {
-            results.setValue(newValue);
+        if (result.getValue() != newValue) {
+            result.setValue(newValue);
         }
     }
 
@@ -109,6 +137,7 @@ public abstract class NetworkBoundResource<CacheObject, RequestObject> {
     // Returns a LiveData object that represents the resource that's implemented
     // in the base class.
     public final LiveData<CacheObject> getAsLiveData() {
-        return results;
+        Log.d(TAG, "getAsLiveData: RESULT: " + result.getValue());
+        return result;
     }
 }

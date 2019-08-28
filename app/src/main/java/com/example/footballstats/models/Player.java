@@ -11,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 @Entity(tableName = "players_table")
 public class Player {
 
-    @PrimaryKey()
+    @PrimaryKey
     private int idPlayer;
 
     @SerializedName("id")
