@@ -8,12 +8,9 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "players_table")
 public class Player {
 
     @PrimaryKey
-    private int idPlayer;
-
     @SerializedName("id")
     @Expose
     private int playerId;
@@ -30,13 +27,6 @@ public class Player {
         this.playerName = playerName;
     }
 
-    public int getIdPlayer() {
-        return idPlayer;
-    }
-
-    public void setIdPlayer(int idPlayer) {
-        this.idPlayer = idPlayer;
-    }
 
     public int getPlayerId() {
         return playerId;
@@ -57,7 +47,6 @@ public class Player {
     @Override
     public String toString() {
         return "Player{" +
-                "idPlayer=" + idPlayer +
                 ", playerId=" + playerId +
                 ", playerName='" + playerName + '\'' +
                 '}';
@@ -73,8 +62,7 @@ public class Player {
             return false;
         }
         Player player = (Player) obj;
-        return player.getIdPlayer() == getIdPlayer()
-                && player.getPlayerName().equals(getPlayerName());
+        return player.getPlayerName().equals(getPlayerName());
     }
 
 }

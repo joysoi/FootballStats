@@ -18,8 +18,8 @@ import com.example.footballstats.R;
 import com.example.footballstats.adapters.ScorersAdapter;
 import com.example.footballstats.models.Competitions;
 import com.example.footballstats.models.Scorers;
-import com.example.footballstats.requests.responses.ScorersStandings;
 import com.example.footballstats.util.Constants;
+import com.example.footballstats.util.Resource;
 import com.example.footballstats.viewmodels.ViewModelProviderFactory;
 
 import java.util.List;
@@ -58,7 +58,6 @@ public class ScorersFragment extends DaggerFragment {
         scorersFragmentViewModel = ViewModelProviders.of(this, providerFactory)
                 .get(ScorersFragmentViewModel.class);
         if (competitions != null) {
-            Log.d(TAG, "onViewCreated: ID: " + competitions.getCompetitionId());
             subscribeObservers(competitions.getCompetitionId());
         }
     }
@@ -73,13 +72,34 @@ public class ScorersFragment extends DaggerFragment {
         scorersFragmentViewModel.observeScorersFromViewModel(compId)
                 .removeObservers(getViewLifecycleOwner());
         scorersFragmentViewModel.observeScorersFromViewModel(compId)
-                .observe(getViewLifecycleOwner(), new Observer<List<Scorers>>() {
+                .observe(getViewLifecycleOwner(), new Observer<Resource<List<Scorers>>>() {
                     @Override
-                    public void onChanged(List<Scorers> scorersList) {
+                    public void onChanged(Resource<List<Scorers>> scorersList) {
                         if (scorersList != null) {
-                            Log.d(TAG, "onChanged: SCORERS LIST:"
-                            + scorersList);
-                            scorersAdapter.submitList(scorersList);
+
+                            if (scorersList.data != null) {
+                                switch (scorersList.status) {
+                                    case LOADING: {
+                                        Log.d(TAG, "onChanged: Status LOADING");
+                                        scorersAdapter.displayLoading();
+                                        break;
+                                    }
+                                    case ERROR: {
+                                        Log.e(TAG, "onChanged: cannot refresh the cache.");
+                                        Log.e(TAG, "onChanged: ERROR message: " + scorersList.message);
+                                        Log.e(TAG, "onChanged: status: ERROR, #Scorers: " + scorersList.data.size());
+                                        Toast.makeText(getActivity(), scorersList.message, Toast.LENGTH_SHORT).show();
+                                        scorersAdapter.setScorersList(scorersList.data);
+                                        break;
+                                    }
+                                    case SUCCESS: {
+                                        Log.d(TAG, "onChanged: cache has been refreshed.");
+                                        Log.d(TAG, "onChanged: status: SUCCESS, #Scorers: " + scorersList.data.size());
+                                        scorersAdapter.setScorersList(scorersList.data);
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                 });

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.footballstats.models.Competitions;
 import com.example.footballstats.repository.FootballRepo;
+import com.example.footballstats.util.Resource;
 
 import java.util.List;
 
@@ -18,7 +19,6 @@ public class StandingsListViewModel extends ViewModel {
 
     private static final String TAG = "StandingsListViewModel";
     private FootballRepo footballRepo;
-    private MediatorLiveData<List<Competitions>> mediatorLiveData = new MediatorLiveData<>();
 
     @Inject
     StandingsListViewModel(FootballRepo footballRepo) {
@@ -26,19 +26,8 @@ public class StandingsListViewModel extends ViewModel {
         this.footballRepo = footballRepo;
     }
 
-    public LiveData<List<Competitions>> getFeed() {
-        observeFeed();
-        return mediatorLiveData;
-    }
-
-    private void observeFeed() {
-        LiveData<List<Competitions>> resourceLiveData = footballRepo.observeFeed();
-        mediatorLiveData.addSource(resourceLiveData, new Observer<List<Competitions>>() {
-            @Override
-            public void onChanged(List<Competitions> listResource) {
-                mediatorLiveData.setValue(listResource);
-            }
-        });
+    LiveData<Resource<List<Competitions>>> getFeed() {
+        return footballRepo.observeFeed();
     }
 
     @Override

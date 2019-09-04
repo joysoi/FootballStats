@@ -9,21 +9,9 @@ import java.util.List;
 
 public class LeagueStandings {
 
-    @SerializedName("competition")
-    @Expose
-    private Competitions competition;
-
     @SerializedName("standings")
     @Expose
     private List<Standing> standings = null;
-
-    public Competitions getCompetition() {
-        return competition;
-    }
-
-    public void setCompetition(Competitions competition) {
-        this.competition = competition;
-    }
 
     public List<Standing> getStandings() {
         return standings;
@@ -36,8 +24,7 @@ public class LeagueStandings {
     @Override
     public String toString() {
         return "LeagueStandings{" +
-                "competition=" + competition +
-                ", standings=" + standings +
+                "standings=" + standings +
                 '}';
     }
 }

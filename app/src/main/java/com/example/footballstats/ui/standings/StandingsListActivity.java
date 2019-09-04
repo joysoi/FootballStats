@@ -8,12 +8,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.footballstats.R;
 import com.example.footballstats.adapters.CompetitionsAdapter;
+import com.example.footballstats.adapters.OnCompetitionsListener;
 import com.example.footballstats.models.Competitions;
 import com.example.footballstats.ui.bottomnav.BottomNavActivity;
 import com.example.footballstats.util.Constants;
+import com.example.footballstats.util.Resource;
 import com.example.footballstats.viewmodels.ViewModelProviderFactory;
 
 import java.util.List;
@@ -22,7 +25,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class StandingsListActivity extends DaggerAppCompatActivity {
+public class StandingsListActivity extends DaggerAppCompatActivity implements OnCompetitionsListener {
 
     private static final String TAG = "StandingsListActivity";
 
@@ -40,37 +43,57 @@ public class StandingsListActivity extends DaggerAppCompatActivity {
         recyclerView = findViewById(R.id.competitionsList);
         standingsListViewModel = ViewModelProviders.of(this, providerFactory).get(StandingsListViewModel.class);
         initRecyclerView();
-        navigateToCompetition();
         subscribeObservers();
     }
 
     private void initRecyclerView() {
-        competitionsAdapter = new CompetitionsAdapter();
+        competitionsAdapter = new CompetitionsAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(competitionsAdapter);
     }
 
 
     private void subscribeObservers() {
-        standingsListViewModel.getFeed().observe(this, new Observer<List<Competitions>>() {
+        standingsListViewModel.getFeed().observe(this, new Observer<Resource<List<Competitions>>>() {
             @Override
-            public void onChanged(List<Competitions> listResource) {
+            public void onChanged(Resource<List<Competitions>> listResource) {
                 if (listResource != null) {
-                    competitionsAdapter.submitList(listResource);
+                    Log.d(TAG, "onChanged: status: " + listResource.status);
+                    if (listResource.data != null) {
+                        switch (listResource.status) {
+                            case LOADING: {
+                                Log.d(TAG, "onChanged: Status LOADING");
+                                competitionsAdapter.displayLoading();
+                                break;
+                            }
+                            case ERROR: {
+                                Log.e(TAG, "onChanged: cannot refresh the cache.");
+                                Log.e(TAG, "onChanged: ERROR message: " + listResource.message);
+                                Log.e(TAG, "onChanged: status: ERROR, #Competitions: " + listResource.data.size());
+                                Log.e(TAG, "onChanged: status: ERROR, #Competitions: " + listResource.data);
+                                Toast.makeText(StandingsListActivity.this, listResource.message, Toast.LENGTH_SHORT).show();
+                                competitionsAdapter.setCompetitions(listResource.data);
+                                break;
+                            }
+                            case SUCCESS: {
+                                Log.d(TAG, "onChanged: cache has been refreshed.");
+                                Log.d(TAG, "onChanged: status: SUCCESS, #Competitions: " + listResource.data.size());
+                                Log.d(TAG, "onChanged: status: SUCCESS, #Competitions: " + listResource.data);
+                                competitionsAdapter.setCompetitions(listResource.data);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         });
     }
 
-    private void navigateToCompetition() {
-        competitionsAdapter.setOnCompetitionsItemClickListener(new CompetitionsAdapter.OnClickCompetitionListener() {
-            @Override
-            public void competitionListClick(Competitions competitions) {
-                Intent intent = new Intent(StandingsListActivity.this, BottomNavActivity.class);
-                intent.putExtra(Constants.COMPETITIONS_INTENT, competitions);
-                Log.d(TAG, "competitionListClick: ID:" + competitions.getCompetitionId());
-                startActivity(intent);
-            }
-        });
+    @Override
+    public void onCompetitionsClick(int position) {
+        Intent intent = new Intent(StandingsListActivity.this, BottomNavActivity.class);
+        intent.putExtra(Constants.COMPETITIONS_INTENT, competitionsAdapter.getSelectedCompetition(position));
+        startActivity(intent);
     }
+
 }

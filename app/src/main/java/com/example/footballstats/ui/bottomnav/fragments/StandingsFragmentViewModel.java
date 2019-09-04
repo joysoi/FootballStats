@@ -3,13 +3,11 @@ package com.example.footballstats.ui.bottomnav.fragments;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.example.footballstats.models.Standing;
 import com.example.footballstats.models.Table;
 import com.example.footballstats.repository.FootballRepo;
+import com.example.footballstats.util.Resource;
 
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class StandingsFragmentViewModel extends ViewModel {
         this.footballRepo = footballRepo;
     }
 
-    LiveData<List<Table>> getLeagueStandings(int id){
+    LiveData<Resource<List<Table>>> getLeagueStandings(int id){
         return footballRepo.observeLeagueStandings(id);
     }
 

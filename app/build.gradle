@@ -92,19 +92,17 @@ dependencies {
     // Testing support
     androidTestImplementation 'android.arch.core:core-testing:1.1.1'
 
-
     // ViewModel and LiveData
     def lifecycle_version = '2.1.0-alpha04'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-
 
     // Reactive Streams (convert Observable to LiveData)
     def reactivestreams_version = "1.1.1"
     implementation "android.arch.lifecycle:reactivestreams:$reactivestreams_version"
 
-    // RxJava Call Adapter (Call object to Observable)
     // Rx-Retrofit Call Adapter
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+    def rxcalladapter_version = '2.5.0'
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rxcalladapter_version" // Retrofit call adapter
 
     // RxJava
     def rxjava_version = '2.1.1'
@@ -131,8 +129,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
-    // Reactive Streams (convert Observable to LiveData)
-    implementation 'android.arch.lifecycle:reactivestreams:1.1.1'
 
     //Stetho
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'

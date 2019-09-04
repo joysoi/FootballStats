@@ -13,6 +13,7 @@ public class BaseApplication extends DaggerApplication {
         return DaggerAppComponent.builder().application(this).build();
     }
 
+    //Todo delete at the end
     @Override
     public void onCreate() {
         super.onCreate();

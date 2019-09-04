@@ -3,59 +3,95 @@ package com.example.footballstats.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.footballstats.R;
 import com.example.footballstats.models.Scorers;
 
-public class ScorersAdapter extends ListAdapter<Scorers, ScorersAdapter.ViewHolder> {
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ScorersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int SCORERS_TYPE = 1;
+    private static final int LOADING_TYPE = 2;
+
+    private List<Scorers> scorersList;
 
     public ScorersAdapter() {
-        super(DIFF_CALLBACK);
     }
-
-    private static final DiffUtil.ItemCallback<Scorers> DIFF_CALLBACK = new DiffUtil.ItemCallback<Scorers>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull Scorers oldItem, @NonNull Scorers newItem) {
-            return false;
-        }
-
-        @Override
-        public boolean areContentsTheSame(@NonNull Scorers oldItem, @NonNull Scorers newItem) {
-            return false;
-        }
-    };
 
     @NonNull
     @Override
-    public ScorersAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_scorers_list_items, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = null;
+
+        switch (viewType) {
+            case LOADING_TYPE: {
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_loading_list_item, parent, false);
+                return new LoadingViewHolder(view);
+            }
+            case SCORERS_TYPE:
+            default: {
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_scorers_list_items, parent, false);
+                return new ScorersViewHolder(view);
+            }
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ScorersAdapter.ViewHolder holder, int position) {
-        Scorers scorers = getItem(position);
-        holder.textViewTeamName.setText(scorers.getTeam().getName());
-        holder.textViewPlayerName.setText(scorers.getPlayer().getPlayerName());
-        holder.textViewGoals.setText(String.valueOf(scorers.getNumberOfGoals()));
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        int itemViewType = getItemViewType(position);
+        if (itemViewType == SCORERS_TYPE) {
+            ((ScorersViewHolder) holder).textViewGoals
+                    .setText(String.valueOf(scorersList.get(position).getNumberOfGoals()));
+            ((ScorersViewHolder) holder).textViewPlayerName
+                    .setText(scorersList.get(position).getPlayer().getPlayerName());
+            ((ScorersViewHolder) holder).textViewTeamName
+                    .setText(scorersList.get(position).getTeam().getName());
+        }
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView textViewTeamName;
-        private TextView textViewPlayerName;
-        private TextView textViewGoals;
-
-        ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            textViewTeamName = itemView.findViewById(R.id.textViewTeamNameScorers);
-            textViewPlayerName = itemView.findViewById(R.id.textViewPlayerName);
-            textViewGoals = itemView.findViewById(R.id.textViewGoals);
+    @Override
+    public int getItemViewType(int position) {
+        if (scorersList.get(position).getNumberOfGoals() == 123) {
+            return LOADING_TYPE;
+        } else {
+            return SCORERS_TYPE;
         }
+    }
+
+    public void displayLoading(){
+        clearScorersList();
+        Scorers scorers = new Scorers();
+        scorers.setNumberOfGoals(123);
+        scorersList.add(scorers);
+        notifyDataSetChanged();
+    }
+
+    private void clearScorersList(){
+        if (scorersList == null){
+            scorersList = new ArrayList<>();
+        }else {
+            scorersList.clear();
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemCount() {
+        if (scorersList != null) {
+            return scorersList.size();
+        }
+        return 0;
+    }
+
+    public void setScorersList(List<Scorers> list){
+        scorersList = list;
+        notifyDataSetChanged();
     }
 }

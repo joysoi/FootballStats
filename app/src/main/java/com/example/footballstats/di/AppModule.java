@@ -4,10 +4,10 @@ import android.app.Application;
 
 import androidx.room.Room;
 
+import com.example.footballstats.requests.LiveDataCallAdapterFactory;
 import com.example.footballstats.persistance.FootballDao;
 import com.example.footballstats.persistance.FootballDataBase;
 import com.example.footballstats.repository.FootballRepo;
-import com.example.footballstats.requests.FeedApiClient;
 import com.example.footballstats.requests.FootballDataApi;
 import com.example.footballstats.util.Constants;
 
@@ -16,7 +16,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
@@ -27,7 +26,7 @@ public class AppModule {
     static Retrofit provideRetrofitInstance() {
         return new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
@@ -57,21 +56,9 @@ public class AppModule {
 
     @Singleton
     @Provides
-    static FeedApiClient provideFeedApiClient(FootballDataApi footballDataApi) {
-        return new FeedApiClient(footballDataApi);
-    }
-
-    @Singleton
-    @Provides
     static FootballRepo provideFootballRepo(FootballDao footballDao, FootballDataApi footballDataApi) {
         return new FootballRepo(footballDao, footballDataApi);
     }
 
-
-//    @Singleton
-//    @Provides
-//    static FootballRepo provideFootballRepo(FeedApiClient feedApiClient){
-//        return new FootballRepo(feedApiClient);
-//    }
 
 }

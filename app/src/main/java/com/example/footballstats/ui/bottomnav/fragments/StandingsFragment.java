@@ -2,10 +2,10 @@ package com.example.footballstats.ui.bottomnav.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.footballstats.R;
 import com.example.footballstats.adapters.StandingsAdapter;
 import com.example.footballstats.models.Competitions;
-import com.example.footballstats.models.Standing;
 import com.example.footballstats.models.Table;
 import com.example.footballstats.util.Constants;
+import com.example.footballstats.util.Resource;
 import com.example.footballstats.viewmodels.ViewModelProviderFactory;
 
 import java.util.List;
@@ -72,12 +72,33 @@ public class StandingsFragment extends DaggerFragment {
                 .removeObservers(getViewLifecycleOwner());
 
         standingsFragmentViewModel.getLeagueStandings(competitionId)
-                .observe(getViewLifecycleOwner(), new Observer<List<Table>>() {
+                .observe(getViewLifecycleOwner(), new Observer<Resource<List<Table>>>() {
                     @Override
-                    public void onChanged(List<Table> tableList) {
+                    public void onChanged(Resource<List<Table>> tableList) {
                         if (tableList != null) {
-                            Log.d(TAG, "onChanged: TABLE LIST: " + tableList);
-                            standingsAdapter.submitList(tableList);
+                            if(tableList.data != null){
+                                switch (tableList.status){
+                                    case LOADING:{
+                                        Log.d(TAG, "onChanged: Status LOADING");
+                                        standingsAdapter.displayLoading();
+                                        break;
+                                    }
+                                    case ERROR:{
+                                        Log.e(TAG, "onChanged: cannot refresh the cache." );
+                                        Log.e(TAG, "onChanged: ERROR message: " + tableList.message );
+                                        Log.e(TAG, "onChanged: status: ERROR, #Table List size: " + tableList.data.size());
+                                        Toast.makeText(getActivity(), tableList.message, Toast.LENGTH_SHORT).show();
+                                        standingsAdapter.setTableList(tableList.data);
+                                        break;
+                                    }
+                                    case SUCCESS:{
+                                        Log.d(TAG, "onChanged: cache has been refreshed.");
+                                        Log.d(TAG, "onChanged: status: SUCCESS, #Table List size:: " + tableList.data.size());
+                                        standingsAdapter.setTableList(tableList.data);
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                 });

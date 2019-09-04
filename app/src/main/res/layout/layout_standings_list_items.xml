@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="start"
-        android:text="1."
         android:textColor="@color/black"
         android:textSize="14sp" />
 
@@ -20,7 +19,6 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="center"
-        android:text="AC Milan"
         android:textAlignment="gravity"
         android:textColor="@color/black"
         android:textSize="14sp" />
@@ -31,7 +29,6 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="end"
-        android:text="99"
         android:textColor="@color/black"
         android:textSize="14sp" />
 </RelativeLayout>

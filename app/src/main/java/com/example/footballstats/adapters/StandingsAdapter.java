@@ -3,60 +3,91 @@ package com.example.footballstats.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.footballstats.R;
 import com.example.footballstats.models.Table;
 
-public class StandingsAdapter extends ListAdapter<Table, StandingsAdapter.ViewHolder> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class StandingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int TABLE_TYPE = 1;
+    private static final int LOADING_TYPE = 2;
+
+    private List<Table> tableList;
 
     public StandingsAdapter() {
-        super(DIFF_CALLBACK);
     }
-
-    private static final DiffUtil.ItemCallback<Table> DIFF_CALLBACK = new DiffUtil.ItemCallback<Table>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull Table oldItem, @NonNull Table newItem) {
-            return false;
-        }
-
-        @Override
-        public boolean areContentsTheSame(@NonNull Table oldItem, @NonNull Table newItem) {
-            return false;
-        }
-    };
 
     @NonNull
     @Override
-    public StandingsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_standings_list_items, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = null;
+
+        switch (viewType) {
+            case LOADING_TYPE: {
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_loading_list_item, parent, false);
+                return new LoadingViewHolder(view);
+            }
+            case TABLE_TYPE:
+            default: {
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_standings_list_items, parent, false);
+                return new StandingsViewHolder(view);
+            }
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull StandingsAdapter.ViewHolder holder, int position) {
-        Table table = getItem(position);
-        holder.textViewPosition.setText(String.valueOf(table.getPosition()));
-        holder.textViewPoints.setText(String.valueOf(table.getPoints()));
-        holder.textViewTeamName.setText(table.getTeam().getName());
-    }
-
-
-    class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView textViewTeamName;
-        private TextView textViewPosition;
-        private TextView textViewPoints;
-
-        ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            textViewTeamName = itemView.findViewById(R.id.textViewTeamName);
-            textViewPosition = itemView.findViewById(R.id.textViewPosition);
-            textViewPoints = itemView.findViewById(R.id.textViewPoints);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        int itemViewType = getItemViewType(position);
+        if (itemViewType == TABLE_TYPE) {
+            ((StandingsViewHolder) holder).textViewPosition.setText(String.valueOf(tableList.get(position).getPosition()));
+            ((StandingsViewHolder) holder).textViewPoints.setText(String.valueOf(tableList.get(position).getPoints()));
+            ((StandingsViewHolder) holder).textViewTeamName.setText(tableList.get(position).getTeam().getName());
         }
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (tableList.get(position).getPoints().equals(123)) {
+            return LOADING_TYPE;
+        } else {
+            return TABLE_TYPE;
+        }
+    }
+
+    public void displayLoading() {
+        clearTableList();
+        Table table = new Table();
+        table.setPoints(123);
+        tableList.add(table);
+        notifyDataSetChanged();
+    }
+
+    private void clearTableList() {
+        if (tableList == null) {
+            tableList = new ArrayList<>();
+        }else {
+            tableList.clear();
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemCount() {
+        if (tableList != null) {
+            return tableList.size();
+        }
+        return 0;
+    }
+
+    public void setTableList(List<Table> list) {
+        tableList = list;
+        notifyDataSetChanged();
+    }
 }
+

@@ -1,5 +1,7 @@
 package com.example.footballstats.di;
 
+//import com.example.footballstats.di.di_standings.StandingsModule;
+import com.example.footballstats.di.di_standings.ScorersModule;
 import com.example.footballstats.di.di_standings.StandingsModule;
 import com.example.footballstats.di.di_standings.di_fragment.BottomNavFragmentModule;
 import com.example.footballstats.ui.bottomnav.fragments.StandingsFragmentViewModel;
@@ -12,7 +14,7 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ActivityBuildersModule {
 
-    @ContributesAndroidInjector(modules = {ViewModelFactoryModule.class, StandingsModule.class})
+    @ContributesAndroidInjector(modules = {ViewModelFactoryModule.class, StandingsModule.class, ScorersModule.class})
     abstract StandingsListActivity contributeStandingListActivity();
 
     @ContributesAndroidInjector(modules = {BottomNavFragmentModule.class, ViewModelFactoryModule.class})

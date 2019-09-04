@@ -5,21 +5,19 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
 
 
 import com.example.footballstats.models.Competitions;
-import com.example.footballstats.models.Player;
 import com.example.footballstats.models.Scorers;
 import com.example.footballstats.models.Standing;
 import com.example.footballstats.models.Table;
-import com.example.footballstats.models.Team;
 import com.example.footballstats.persistance.FootballDao;
 import com.example.footballstats.requests.FootballDataApi;
+import com.example.footballstats.requests.responses.ApiResponse;
 import com.example.footballstats.requests.responses.Feed;
 import com.example.footballstats.requests.responses.LeagueStandings;
 import com.example.footballstats.requests.responses.ScorersStandings;
-import com.example.footballstats.util.NetworkBoundResource;
+import com.example.footballstats.util.Resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +30,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -56,7 +53,7 @@ public class FootballRepo {
         Competitions
      */
 
-    public LiveData<List<Competitions>> observeFeed() {
+    public LiveData<Resource<List<Competitions>>> observeFeed() {
         return new NetworkBoundResource<List<Competitions>, Feed>() {
             @Override
             protected void saveCallResult(@NonNull Feed item) {
@@ -66,7 +63,6 @@ public class FootballRepo {
                     for (Competitions compItems : item.getCompetitionsList()) {
                         String compId = String.valueOf(compItems.getCompetitionId());
                         if (availableCompetitionsIds.contains(compId)) {
-                            compItems.setTimestamp((int) System.currentTimeMillis() / 1000); // in seconds
                             newCompList.add(compItems);
                             insertCompetitions(newCompList);
                         }
@@ -76,18 +72,6 @@ public class FootballRepo {
 
             @Override
             protected boolean shouldFetch(@Nullable List<Competitions> data) {
-//                if (data != null) {
-//                    int currentTime = (int) System.currentTimeMillis() / 1000; // time in seconds
-//                    for (Competitions competitions : data) {
-//                        int lastRefresh = competitions.getTimestamp() / 1000;
-//                        if ((currentTime - lastRefresh) >= Constants.REFRESH_TIME) {
-//                            return true;
-//                        }
-//                    }
-//                    Log.d(TAG, "shouldFetch: Should REFRESH List: " + true);
-//                    return true;
-//                }
-//                Log.d(TAG, "shouldFetch: Should NOT REFRESH List " + false);
                 return true;
             }
 
@@ -99,10 +83,8 @@ public class FootballRepo {
 
             @NonNull
             @Override
-            protected LiveData<Feed> createCall() {
-                return LiveDataReactiveStreams
-                        .fromPublisher(footballDataApi.getMainResponse()
-                                .subscribeOn(Schedulers.io()));
+            protected LiveData<ApiResponse<Feed>> createCall() {
+                return footballDataApi.getMainResponse();
             }
         }.getAsLiveData();
     }
@@ -117,6 +99,7 @@ public class FootballRepo {
                             int index = 0;
                             for (long rowId : footballDao.insertCompetitions((newCompList.toArray(competitions)))) {
                                 if (rowId == -1) {
+                                    Log.d(TAG, "saveCallResult: CONFLICT... This recipe is already in the cache");
                                     updateCompetitions(
                                             competitions[index].getCompetitionId(),
                                             competitions[index].getCompetitionName()
@@ -154,6 +137,7 @@ public class FootballRepo {
             }
         });
 
+        //return value for testing purposes
         return observableInsert;
     }
 
@@ -204,14 +188,13 @@ public class FootballRepo {
         League Standings
      */
 
-    public LiveData<List<Table>> observeLeagueStandings(final int id) {
+    public LiveData<Resource<List<Table>>> observeLeagueStandings(final int id) {
         return new NetworkBoundResource<List<Table>, LeagueStandings>() {
             @Override
             protected void saveCallResult(@NonNull LeagueStandings item) {
                 if (item.getStandings() != null) {
                     for (Standing standing : item.getStandings()) {
                         if (standing.getType().equals("TOTAL")) {
-                            standing.setTimestamp((int) System.currentTimeMillis() / 1000);
                             Log.d(TAG, "saveCallResult: TABLE LIST: " + standing.getTableList());
                             insertTableStandings(standing.getTableList());
                         }
@@ -228,16 +211,13 @@ public class FootballRepo {
             @NonNull
             @Override
             protected LiveData<List<Table>> loadFromDb() {
-                Log.d(TAG, "loadFromDb: " + footballDao.getAllTableData());
                 return footballDao.getAllTableData();
             }
 
             @NonNull
             @Override
-            protected LiveData<LeagueStandings> createCall() {
-                return LiveDataReactiveStreams
-                        .fromPublisher(footballDataApi.getLeagueStandingsResponse(String.valueOf(id))
-                                .subscribeOn(Schedulers.io()));
+            protected LiveData<ApiResponse<LeagueStandings>> createCall() {
+                return footballDataApi.getLeagueStandingsResponse(String.valueOf(id));
             }
         }.getAsLiveData();
     }
@@ -342,7 +322,7 @@ public class FootballRepo {
         Scorers
      */
 
-    public LiveData<List<Scorers>> observeScorers(final int id) {
+    public LiveData<Resource<List<Scorers>>> observeScorers(final int id) {
         return new NetworkBoundResource<List<Scorers>, ScorersStandings>() {
             @Override
             protected void saveCallResult(@NonNull ScorersStandings item) {
@@ -365,10 +345,8 @@ public class FootballRepo {
 
             @NonNull
             @Override
-            protected LiveData<ScorersStandings> createCall() {
-                return LiveDataReactiveStreams
-                        .fromPublisher(footballDataApi.getScorersResponse(String.valueOf(id))
-                                .subscribeOn(Schedulers.io()));
+            protected LiveData<ApiResponse<ScorersStandings>> createCall() {
+                return footballDataApi.getScorersResponse(String.valueOf(id));
             }
         }.getAsLiveData();
     }
@@ -385,8 +363,8 @@ public class FootballRepo {
                                 if (rowId == -1) {
                                     updateScorersTable(
                                             scorers[index].getNumberOfGoals(),
-                                            scorers[index].getTeam(),
-                                            scorers[index].getPlayer()
+                                            scorers[index].getTeam().getName(),
+                                            scorers[index].getPlayer().getPlayerName()
                                     );
                                 }
                                 index++;
@@ -394,7 +372,6 @@ public class FootballRepo {
                             emitter.onNext(scorers);
                             emitter.onComplete();
                         }
-
                     }
                 })
                 .subscribeOn(Schedulers.io());
@@ -423,7 +400,7 @@ public class FootballRepo {
         });
     }
 
-    private int updateScorersTable(final int numberOfGoals, final Team team, final Player player) {
+    private int updateScorersTable(final int numberOfGoals, final String teamName, final String playerName) {
         Observable<Scorers> observableUpdate = Observable
                 .create(new ObservableOnSubscribe<Scorers>() {
                     @Override
@@ -431,8 +408,8 @@ public class FootballRepo {
                         if (!emitter.isDisposed()) {
                             footballDao.updateScorers(
                                     numberOfGoals,
-                                    team,
-                                    player
+                                    teamName,
+                                    playerName
                             );
                         }
                     }

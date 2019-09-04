@@ -22,7 +22,7 @@ import java.util.List;
 @Dao
 public interface FootballDao {
 
-    //  Competitions
+    // Competition standings
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertCompetitions(Competitions... competitions);
 
@@ -46,13 +46,13 @@ public interface FootballDao {
     LiveData<List<Table>> getAllTableData();
 
 
-    // Scorers
+    // Scorers standings
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertScorers(Scorers... scorers);
 
-    @Query("UPDATE scorers_table SET numberOfGoals = :numberOfGoals, team = :team, player = :player " +
-            "WHERE numberOfGoals = :numberOfGoals")
-    void updateScorers(int numberOfGoals, Team team, Player player);
+    @Query("UPDATE scorers_table SET numberOfGoals = :numberOfGoals, team = :teamName, player = :playerName " +
+            "WHERE team = :teamName")
+    int updateScorers(int numberOfGoals, String teamName, String playerName);
 
     @Query("SELECT * FROM scorers_table ORDER BY numberOfGoals DESC")
     LiveData<List<Scorers>> getAllScorers();

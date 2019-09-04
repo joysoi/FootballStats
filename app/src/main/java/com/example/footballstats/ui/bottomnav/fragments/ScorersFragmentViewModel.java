@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.footballstats.models.Scorers;
 import com.example.footballstats.repository.FootballRepo;
-import com.example.footballstats.requests.responses.ScorersStandings;
+import com.example.footballstats.util.Resource;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class ScorersFragmentViewModel extends ViewModel {
         this.footballRepo = footballRepo;
     }
 
-    LiveData<List<Scorers>> observeScorersFromViewModel(int id) {
+    LiveData<Resource<List<Scorers>>> observeScorersFromViewModel(int id) {
         return footballRepo.observeScorers(id);
     }
 

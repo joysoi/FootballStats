@@ -10,12 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-@Entity(tableName = "league_standings_table")
 public class Standing {
-
-    @PrimaryKey(autoGenerate = true)
-    @Expose
-    private int standingsId;
 
     @SerializedName("type")
     @Expose
@@ -33,15 +28,6 @@ public class Standing {
     @Ignore
     public Standing(String type) {
         this.type = type;
-    }
-
-
-    public int getStandingsId() {
-        return standingsId;
-    }
-
-    public void setStandingsId(int standingsId) {
-        this.standingsId = standingsId;
     }
 
     public String getType() {
@@ -72,7 +58,6 @@ public class Standing {
     @Override
     public String toString() {
         return "Standing{" +
-                "standingsId=" + standingsId +
                 ", type='" + type + '\'' +
                 ", tableList=" + tableList +
                 '}';

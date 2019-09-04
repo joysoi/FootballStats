@@ -5,15 +5,12 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 @Entity(tableName = "competitions_table")
 public class Competitions implements Parcelable {
@@ -39,10 +36,10 @@ public class Competitions implements Parcelable {
         this.competitionId = competitionId;
     }
 
-//    @Ignore
-//    public Competitions(String competitionName) {
-//        this.competitionName = competitionName;
-//    }
+    @Ignore
+    public Competitions(String competitionName) {
+        this.competitionName = competitionName;
+    }
 
     @Ignore
     public Competitions(int competitionId, @NonNull String competitionName, int timestamp) {

@@ -8,16 +8,7 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-//@Entity(tableName = "team_table")
 public class Team {
-
-//    @PrimaryKey
-//    private int idTeam;
-//
-//    @SerializedName("id")
-//    @Expose
-//    private int teamId;
-
     @SerializedName("name")
     @Expose
     private String name;
@@ -29,22 +20,6 @@ public class Team {
     public Team(String name) {
         this.name = name;
     }
-
-//    public int getIdTeam() {
-//        return idTeam;
-//    }
-//
-//    public void setIdTeam(int idTeam) {
-//        this.idTeam = idTeam;
-//    }
-//
-//    public int getTeamId() {
-//        return teamId;
-//    }
-//
-//    public void setTeamId(int teamId) {
-//        this.teamId = teamId;
-//    }
 
     public String getName() {
         return name;

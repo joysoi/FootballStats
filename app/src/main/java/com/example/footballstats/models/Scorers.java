@@ -11,7 +11,6 @@ import com.google.gson.annotations.SerializedName;
 @Entity(tableName = "scorers_table")
 public class Scorers {
 
-
     @PrimaryKey
     @SerializedName("numberOfGoals")
     @Expose
@@ -66,14 +65,6 @@ public class Scorers {
         this.numberOfGoals = numberOfGoals;
     }
 
-    @Override
-    public String toString() {
-        return "Scorers{" +
-                "numberOfGoals=" + numberOfGoals +
-                ", player=" + player +
-                ", team=" + team +
-                '}';
-    }
 
     @Override
     public boolean equals(@Nullable Object obj) {
