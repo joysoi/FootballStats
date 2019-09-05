@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/textViewTeamNameScorers"
@@ -10,9 +11,10 @@
         android:layout_marginBottom="10dp"
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="start"
-        android:maxLength="14"
+        android:maxLength="10"
         android:textAlignment="gravity"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/textViewPlayerName"
@@ -22,7 +24,8 @@
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="center"
         android:textAlignment="gravity"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/textViewGoals"
@@ -31,5 +34,6 @@
         android:layout_marginBottom="10dp"
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="end"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 </RelativeLayout>
