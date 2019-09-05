@@ -65,14 +65,15 @@ public class Standing {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if(obj == null){
+        if (obj == null) {
             return false;
         }
 
-        if(getClass() != obj.getClass()){
+        if (getClass() != obj.getClass()) {
             return false;
         }
         Standing standing = (Standing) obj;
-        return standing.getType().equals(getType());
+        return standing.getType().equals(getType())
+                && standing.getTableList().equals(getTableList());
     }
 }

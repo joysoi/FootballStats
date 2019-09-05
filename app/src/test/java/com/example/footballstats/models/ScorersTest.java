@@ -43,9 +43,7 @@ class ScorersTest {
     void areScorersEqual_sameValue_returnTrue() throws Exception {
         //Arrange
         Scorers scorer1 = new Scorers(player1, team1);
-        scorer1.setId_Scorers(1);
         Scorers scorer2 = new Scorers(player1, team1);
-        scorer2.setId_Scorers(1);
         //Act
 
         //Assert
@@ -55,16 +53,16 @@ class ScorersTest {
 
 
     /*
-             Compare Scorers with two different ids
+             Compare Scorers with difference in goal scoring
          */
 
     @Test
-    void areScorersEqual_diffIds_returnFalse() throws Exception {
+    void areScorersEqual_diffNumberOfGoals_returnFalse() throws Exception {
         //Arrange
         Scorers scorer1 = new Scorers(player1, team1);
-        scorer1.setId_Scorers(1);
-        Scorers scorer2 = new Scorers(player1, team1);
-        scorer2.setId_Scorers(2);
+        scorer1.setNumberOfGoals(1);
+        Scorers scorer2 = new Scorers(player2, team2);
+        scorer2.setNumberOfGoals(1);
         //Act
 
         //Assert
@@ -80,9 +78,7 @@ class ScorersTest {
     void areScorersEqual_diffTeams_returnFalse() throws Exception {
         //Arrange
         Scorers scorer1 = new Scorers(player1, team1);
-        scorer1.setId_Scorers(1);
         Scorers scorer2 = new Scorers(player1, team2);
-        scorer2.setId_Scorers(2);
         //Act
 
         //Assert
@@ -99,9 +95,7 @@ class ScorersTest {
     void areScorersDiff_sameTeam_returnTrue() throws Exception {
         //Arrange
         Scorers scorer1 = new Scorers(player1, team1);
-        scorer1.setId_Scorers(1);
         Scorers scorer2 = new Scorers(player2, team1);
-        scorer2.setId_Scorers(2);
         //Act
 
         //Assert
@@ -118,9 +112,7 @@ class ScorersTest {
     void areScorersSame_diffNumberGoals_returnFalse() throws Exception {
         //Arrange
         Scorers scorer1 = new Scorers(3, player1, team1);
-        scorer1.setId_Scorers(1);
         Scorers scorer2 = new Scorers(3, player2, team1);
-        scorer2.setId_Scorers(2);
         //Act
 
         //Assert
@@ -136,9 +128,7 @@ class ScorersTest {
     void areScorersSame_sameValues_returnTrue() throws Exception {
         //Arrange
         Scorers scorer1 = new Scorers(3, player1, team1);
-        scorer1.setId_Scorers(1);
         Scorers scorer2 = new Scorers(3, player1, team1);
-        scorer2.setId_Scorers(1);
         //Act
 
         //Assert
@@ -154,9 +144,7 @@ class ScorersTest {
     void areScorersEqual_diffValues_returnFalse() throws Exception {
         //Arrange
         Scorers scorer1 = new Scorers(3, player1, team1);
-        scorer1.setId_Scorers(1);
         Scorers scorer2 = new Scorers(4, player2, team2);
-        scorer2.setId_Scorers(2);
         //Act
 
         //Assert

@@ -143,24 +143,24 @@ public class FootballRepoTest {
         confirm that the observer is triggered
         confirm that new rows are being inserted
      */
-//    @Test
-//    void updateCompetition_returnRowsUpdated() throws Exception {
-//        //Arrange
-//        Competitions[] competitions = new Competitions[]{TestUtil.TEST_COMPETITIONS_1};
-//        int insertedValueId = competitions[0].getCompetitionId();
-//        String insertedValueName = competitions[0].getCompetitionName();
-//        when(footballDao.updateCompetitions(insertedValueId, insertedValueName))
-//                .thenReturn(competitions[0].getCompetitionId());
-//
-//        //Act
-//        int returnedValue = footballRepo.updateCompetitions(TestUtil.COMP_ID_1, TestUtil.COMP_NAME_1);
-//
-//        //Assert
-//        verify(footballDao, atLeast(1)).updateCompetitions(insertedValueId, insertedValueName);
-//        verifyNoMoreInteractions(footballDao);
-//
-//        assertEquals(insertedValueId, returnedValue);
-//    }
+    @Test
+    void updateCompetition_returnRowsUpdated() throws Exception {
+        //Arrange
+        Competitions[] competitions = new Competitions[]{TestUtil.TEST_COMPETITIONS_1};
+        int insertedValueId = competitions[0].getCompetitionId();
+        String insertedValueName = competitions[0].getCompetitionName();
+        when(footballDao.updateCompetitions(insertedValueId, insertedValueName))
+                .thenReturn(competitions[0].getCompetitionId());
+
+        //Act
+        int returnedValue = footballRepo.updateCompetitions(TestUtil.COMP_ID_1, TestUtil.COMP_NAME_1);
+
+        //Assert
+        verify(footballDao).updateCompetitions(insertedValueId, insertedValueName);
+        verifyNoMoreInteractions(footballDao);
+
+        assertEquals(insertedValueId, returnedValue);
+    }
 
 
       /*
@@ -168,22 +168,22 @@ public class FootballRepoTest {
         return Failure
      */
 
-//    @Test
-//    void updateCompetition_returnFailure() throws Exception {
-//        //Arrange
-//        Competitions[] competitions = new Competitions[]{TestUtil.TEST_COMPETITIONS_2};
-//        int insertedValueId = competitions[0].getCompetitionId();
-//        String insertedValueName = competitions[0].getCompetitionName();
-//        when(footballRepo.updateCompetitions(insertedValueId, insertedValueName))
-//                .thenReturn(competitions[0].getCompetitionId());
-//
-//        //Act
-//        int returnedValue = footballRepo.updateCompetitions(TestUtil.COMP_ID_1, TestUtil.COMP_NAME_1);
-//
-//        //Assert
-//        verify(footballDao, atLeast(1)).updateCompetitions(TestUtil.COMP_ID_1,  TestUtil.COMP_NAME_1);
-//        verifyNoMoreInteractions(footballDao);
-//
-//        assertNotEquals(insertedValueId, returnedValue);
-//    }
+    @Test
+    void updateCompetition_returnFailure() throws Exception {
+        //Arrange
+        Competitions[] competitions = new Competitions[]{TestUtil.TEST_COMPETITIONS_2};
+        int insertedValueId = competitions[0].getCompetitionId();
+        String insertedValueName = competitions[0].getCompetitionName();
+        when(footballRepo.updateCompetitions(insertedValueId, insertedValueName))
+                .thenReturn(competitions[0].getCompetitionId());
+
+        //Act
+        int returnedValue = footballRepo.updateCompetitions(TestUtil.COMP_ID_1, TestUtil.COMP_NAME_1);
+
+        //Assert
+        verify(footballDao).updateCompetitions(TestUtil.COMP_ID_1,  TestUtil.COMP_NAME_1);
+        verifyNoMoreInteractions(footballDao);
+
+        assertNotEquals(insertedValueId, returnedValue);
+    }
 }

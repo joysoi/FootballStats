@@ -89,7 +89,7 @@ public class FootballRepo {
         }.getAsLiveData();
     }
 
-    private Observable<Competitions[]> insertCompetitions(final List<Competitions> newCompList) {
+    public Observable<Competitions[]> insertCompetitions(final List<Competitions> newCompList) {
         final Competitions[] competitions = new Competitions[newCompList.size()];
         Observable<Competitions[]> observableInsert = Observable
                 .create(new ObservableOnSubscribe<Competitions[]>() {
@@ -141,7 +141,7 @@ public class FootballRepo {
         return observableInsert;
     }
 
-    private int updateCompetitions(final int competitionId, final String competitionName) {
+    public int updateCompetitions(final int competitionId, final String competitionName) {
 
         Observable<Competitions> updateCompetitions = Observable
                 .create(new ObservableOnSubscribe<Competitions>() {

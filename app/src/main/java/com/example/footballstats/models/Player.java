@@ -62,7 +62,8 @@ public class Player {
             return false;
         }
         Player player = (Player) obj;
-        return player.getPlayerName().equals(getPlayerName());
+        return player.getPlayerName().equals(getPlayerName())
+                && player.getPlayerId() == getPlayerId();
     }
 
 }

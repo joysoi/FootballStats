@@ -59,6 +59,4 @@ public class AppModule {
     static FootballRepo provideFootballRepo(FootballDao footballDao, FootballDataApi footballDataApi) {
         return new FootballRepo(footballDao, footballDataApi);
     }
-
-
 }

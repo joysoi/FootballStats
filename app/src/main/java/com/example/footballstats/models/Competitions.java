@@ -42,6 +42,12 @@ public class Competitions implements Parcelable {
     }
 
     @Ignore
+    public Competitions(int competitionId, String competitionName) {
+        this.competitionId = competitionId;
+        this.competitionName = competitionName;
+    }
+
+    @Ignore
     public Competitions(int competitionId, @NonNull String competitionName, int timestamp) {
         this.competitionId = competitionId;
         this.competitionName = competitionName;

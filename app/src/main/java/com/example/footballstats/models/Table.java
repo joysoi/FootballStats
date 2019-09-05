@@ -78,6 +78,7 @@ public class Table {
         }
         Table table = (Table) obj;
         return table.getPosition().equals(getPosition())
-                && table.getPoints().equals(getPoints());
+                && table.getPoints().equals(getPoints())
+                && table.getTeam().equals(getTeam());
     }
 }
