@@ -42,18 +42,37 @@ public class TestUtil {
     //Table data
     public static final Table TEST_TABLE_DATA_1 = new Table(1,
             new Team("Arsenal"),
-            10);
+            5);
     public static final Table TEST_TABLE_DATA_2 = new Table(2,
             new Team("Tottenham"),
             9);
 
+    public static final List<Table> TEST_TABLE_DATA_LIST = Collections.unmodifiableList(
+            new ArrayList<Table>() {{
+                add(new Table(1, new Team("Arsenal"), 5));
+            }}
+    );
+
+    public static final int POSITION_1 = 1;
+    public static final String TEAM_NAME_1 = "Arsenal";
+    public static final int POINTS_1 = 5;
+
 
     //Scorers data
     public static final Scorers TEST_SCORERS_DATA_1 = new Scorers(5,
-            new Player("Ronaldo"),
-            new Team("Juventus"));
+            new Player("Pepe"),
+            new Team("Arsenal"));
 
     public static final Scorers TEST_SCORERS_DATA_2 = new Scorers(4,
             new Player("Benzema"),
             new Team("Real Madrid"));
+
+    public static final List<Scorers> TEST_SCORERS_LIST = Collections.unmodifiableList(
+            new ArrayList<Scorers>() {{
+                add(new Scorers(5, new Player("Pepe"),new Team("Arsenal")));
+            }}
+    );
+
+    public static final int NUMBER_OF_GOALS_1 = 5;
+    public static final String PLAYER_1 = "Pepe";
 }

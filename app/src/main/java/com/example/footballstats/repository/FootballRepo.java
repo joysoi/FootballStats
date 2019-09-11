@@ -223,7 +223,7 @@ public class FootballRepo {
     }
 
 
-    private void insertTableStandings(final List<Table> tableList) {
+    public Observable<Table[]> insertTableStandings(final List<Table> tableList) {
         final Table[] tables = new Table[tableList.size()];
         Observable<Table[]> observableInsert = Observable
                 .create(new ObservableOnSubscribe<Table[]>() {
@@ -271,10 +271,12 @@ public class FootballRepo {
             }
         });
 
+        //return value for testing purposes
+        return observableInsert;
     }
 
 
-    private int updateTableStandings(final int position, final String teamName, final int points) {
+    public int updateTableStandings(final int position, final String teamName, final int points) {
         Observable<Table> observableUpdate = Observable
                 .create(new ObservableOnSubscribe<Table>() {
                     @Override
@@ -351,7 +353,7 @@ public class FootballRepo {
         }.getAsLiveData();
     }
 
-    private void insertScorersList(final List<Scorers> scorersList) {
+    public Observable<Scorers[]> insertScorersList(final List<Scorers> scorersList) {
         final Scorers[] scorers = new Scorers[scorersList.size()];
         Observable<Scorers[]> observableInsert = Observable
                 .create(new ObservableOnSubscribe<Scorers[]>() {
@@ -398,9 +400,12 @@ public class FootballRepo {
                 Log.d(TAG, "onComplete: insertScorersList");
             }
         });
+
+        // returned for testing purposes only
+        return observableInsert;
     }
 
-    private int updateScorersTable(final int numberOfGoals, final String teamName, final String playerName) {
+    public int updateScorersTable(final int numberOfGoals, final String teamName, final String playerName) {
         Observable<Scorers> observableUpdate = Observable
                 .create(new ObservableOnSubscribe<Scorers>() {
                     @Override

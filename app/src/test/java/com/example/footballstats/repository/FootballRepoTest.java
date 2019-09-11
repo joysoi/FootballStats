@@ -2,6 +2,9 @@ package com.example.footballstats.repository;
 
 import com.bumptech.glide.load.engine.Resource;
 import com.example.footballstats.models.Competitions;
+import com.example.footballstats.models.Scorers;
+import com.example.footballstats.models.Table;
+import com.example.footballstats.models.Team;
 import com.example.footballstats.persistance.FootballDao;
 import com.example.footballstats.requests.FootballDataApi;
 import com.example.footballstats.util.TestUtil;
@@ -47,6 +50,12 @@ import static org.mockito.MockitoAnnotations.*;
 public class FootballRepoTest {
     public static final List<Competitions> COMPETITIONS_LIST =
             new ArrayList<>(TestUtil.TEST_COMPETITIONS_LIST);
+
+    public static final List<Table> TABLE_DATA_LIST =
+            new ArrayList<>(TestUtil.TEST_TABLE_DATA_LIST);
+
+    public static final List<Scorers> TABLE_SCORERS_LIST =
+            new ArrayList<>(TestUtil.TEST_SCORERS_LIST);
 
     //system under test
     private FootballRepo footballRepo;
@@ -129,7 +138,7 @@ public class FootballRepoTest {
         Competitions[] returnedValue = footballRepo.insertCompetitions(COMPETITIONS_LIST).blockingFirst();
 
         //Assert
-        verify(footballDao,atLeast(1)).insertCompetitions(any(Competitions.class));
+        verify(footballDao, atLeast(1)).insertCompetitions(any(Competitions.class));
         verifyNoMoreInteractions(footballDao);
 
         assertNotEquals(insertedRow, returnedValue);
@@ -180,9 +189,233 @@ public class FootballRepoTest {
         int returnedValue = footballRepo.updateCompetitions(TestUtil.COMP_ID_1, TestUtil.COMP_NAME_1);
 
         //Assert
-        verify(footballDao).updateCompetitions(TestUtil.COMP_ID_1,  TestUtil.COMP_NAME_1);
+        verify(footballDao).updateCompetitions(TestUtil.COMP_ID_1, TestUtil.COMP_NAME_1);
         verifyNoMoreInteractions(footballDao);
 
         assertNotEquals(insertedValueId, returnedValue);
+    }
+
+
+
+    /* insert League Standings Table data */
+
+    /*
+        verify the correct method is called
+        confirm that new rows are being inserted
+     */
+
+    @Test
+    void insertTableData_returnRow() throws Exception {
+        //Arrange
+        final long insertedRow = 1L;
+        final List<Long> longList = new ArrayList<>();
+        longList.add(insertedRow);
+        final long[] returnedData = new long[]{longList.size()};
+        when(footballDao.insertTableData(any(Table.class)))
+                .thenReturn(returnedData);
+
+        //Act
+        Table[] returnedValue = footballRepo.insertTableStandings(TABLE_DATA_LIST).blockingFirst();
+
+        //Assert
+        verify(footballDao, atLeast(1)).insertTableData(any(Table.class));
+        verifyNoMoreInteractions(footballDao);
+
+        System.out.println("Returned value: " + Arrays.toString(returnedValue));
+        assertEquals(TABLE_DATA_LIST.toArray(returnedValue), returnedValue);
+    }
+
+
+    /*
+    insert League Standings Table data
+    return Failure (-1)
+ */
+    @Test
+    void insertLeagueTableData_returnFailure() throws Exception {
+        //Arrange
+        final long insertedRow = 1L;
+        final List<Long> longList = new ArrayList<>();
+        longList.add(insertedRow);
+        final long[] returnedData = new long[]{longList.size()};
+        when(footballDao.insertTableData(any(Table.class)))
+                .thenReturn(returnedData);
+
+        //Act
+        Table[] returnedValue = footballRepo.insertTableStandings(TABLE_DATA_LIST).blockingFirst();
+
+        //Assert
+        verify(footballDao, atLeast(1)).insertTableData(any(Table.class));
+        verifyNoMoreInteractions(footballDao);
+
+        assertNotEquals(insertedRow, returnedValue);
+    }
+
+
+    /* update League Standings Table data */
+
+    /*
+        verify the correct method is called
+        confirm that new rows are being inserted
+     */
+    @Test
+    void updateLeagueTableData_returnRowsUpdated() throws Exception {
+        //Arrange
+        Table[] tables = new Table[]{TestUtil.TEST_TABLE_DATA_1};
+        int insertedPosition = tables[0].getPosition();
+        String insertedTeamName = tables[0].getTeam().getName();
+        int insertedPoints = tables[0].getPoints();
+
+        when(footballDao.updateTableData(insertedPosition, insertedTeamName, insertedPoints))
+                .thenReturn(tables[0].getPosition());
+
+        //Act
+        int returnedValue = footballRepo.updateTableStandings(TestUtil.POSITION_1,
+                TestUtil.TEAM_NAME_1, TestUtil.POINTS_1);
+
+        //Assert
+        verify(footballDao).updateTableData(insertedPosition, insertedTeamName, insertedPoints);
+        verifyNoMoreInteractions(footballDao);
+
+        assertEquals(insertedPoints, returnedValue);
+
+    }
+
+       /*
+        update League Standings Table data
+        return Failure
+     */
+
+    @Test
+    void updateLeagueTableData_returnFailure() throws Exception {
+        //Arrange
+        Table[] tables = new Table[]{TestUtil.TEST_TABLE_DATA_1};
+        int insertedPosition = tables[0].getPosition();
+        String insertedTeamName = tables[0].getTeam().getName();
+        int insertedPoints = tables[0].getPoints();
+
+        when(footballDao.updateTableData(insertedPosition, insertedTeamName, insertedPoints))
+                .thenReturn(tables[0].getPosition());
+
+        //Act
+        int returnedValue = footballRepo.updateTableStandings(TestUtil.POSITION_1,
+                TestUtil.TEAM_NAME_1, TestUtil.POINTS_1);
+
+        //Assert
+        verify(footballDao).updateTableData(insertedPosition, insertedTeamName, insertedPoints);
+        verifyNoMoreInteractions(footballDao);
+
+        assertNotEquals(insertedPosition, returnedValue);
+
+    }
+
+
+    /* insert Scorers data */
+
+    /*
+        verify the correct method is called
+        confirm that new rows are being inserted
+     */
+
+    @Test
+    void insertScorersData_returnRow() throws Exception {
+        //Arrange
+        final long insertedRow = 1L;
+        final List<Long> longList = new ArrayList<>();
+        longList.add(insertedRow);
+        final long[] returnedData = new long[]{longList.size()};
+        when(footballDao.insertScorers(any(Scorers.class)))
+                .thenReturn(returnedData);
+
+        //Act
+        Scorers[] returnedValue = footballRepo.insertScorersList(TABLE_SCORERS_LIST).blockingFirst();
+
+        //Assert
+        verify(footballDao, atLeast(1)).insertScorers(any(Scorers.class));
+        verifyNoMoreInteractions(footballDao);
+
+        System.out.println("Returned value: " + Arrays.toString(returnedValue));
+        assertEquals(TABLE_SCORERS_LIST.toArray(returnedValue), returnedValue);
+    }
+
+    /*
+  insert Scorers data
+  return Failure (-1)
+*/
+    @Test
+    void insertScorersData_returnFailure() throws Exception {
+        //Arrange
+        final long insertedRow = 1L;
+        final List<Long> longList = new ArrayList<>();
+        longList.add(insertedRow);
+        final long[] returnedData = new long[]{longList.size()};
+        when(footballDao.insertScorers(any(Scorers.class)))
+                .thenReturn(returnedData);
+
+        //Act
+        Scorers[] returnedValue = footballRepo.insertScorersList(TABLE_SCORERS_LIST).blockingFirst();
+
+        //Assert
+        verify(footballDao, atLeast(1)).insertScorers(any(Scorers.class));
+        verifyNoMoreInteractions(footballDao);
+
+        System.out.println("Returned value: " + Arrays.toString(returnedValue));
+        assertEquals(TABLE_SCORERS_LIST.toArray(returnedValue), returnedValue);
+    }
+
+    /* update Scorers data */
+
+    /*
+        verify the correct method is called
+        confirm that new rows are being inserted
+     */
+    @Test
+    void updateScorersData_returnRowsUpdated() throws Exception {
+        //Arrange
+        Scorers[] scorers = new Scorers[]{TestUtil.TEST_SCORERS_DATA_1};
+        int insertedNumberOfGoals = scorers[0].getNumberOfGoals();
+        String insertedTeamName = scorers[0].getTeam().getName();
+        String insertedPlayerName = scorers[0].getPlayer().getPlayerName();
+
+        when(footballDao.updateScorers(insertedNumberOfGoals, insertedTeamName, insertedPlayerName))
+                .thenReturn(scorers[0].getNumberOfGoals());
+
+        //Act
+        int returnedValue = footballRepo.updateScorersTable(TestUtil.NUMBER_OF_GOALS_1,
+                TestUtil.TEAM_NAME_1, TestUtil.PLAYER_1);
+
+        //Assert
+        verify(footballDao).updateScorers(insertedNumberOfGoals, insertedTeamName, insertedPlayerName);
+        verifyNoMoreInteractions(footballDao);
+
+        assertEquals(insertedNumberOfGoals, returnedValue);
+
+    }
+
+           /*
+        update Scorers data
+        return Failure
+     */
+
+    @Test
+    void updateScorersData_returnFailure() throws Exception {
+        //Arrange
+        Scorers[] scorers = new Scorers[]{TestUtil.TEST_SCORERS_DATA_1};
+        int insertedNumberOfGoals = scorers[0].getNumberOfGoals();
+        String insertedTeamName = scorers[0].getTeam().getName();
+        String insertedPlayerName = scorers[0].getPlayer().getPlayerName();
+
+        when(footballDao.updateScorers(insertedNumberOfGoals, insertedTeamName, insertedPlayerName))
+                .thenReturn(scorers[0].getNumberOfGoals());
+
+        //Act
+        int returnedValue = footballRepo.updateScorersTable(TestUtil.NUMBER_OF_GOALS_1,
+                TestUtil.TEAM_NAME_1, TestUtil.PLAYER_1);
+
+        //Assert
+        verify(footballDao).updateScorers(insertedNumberOfGoals, insertedTeamName, insertedPlayerName);
+        verifyNoMoreInteractions(footballDao);
+
+        assertNotEquals(4, returnedValue);
+
     }
 }
