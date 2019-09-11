@@ -22,8 +22,8 @@ public abstract class FootballDataBaseTest {
 
     @Before
     public void init() {
-        footballDataBase = Room.inMemoryDatabaseBuilder(
-                ApplicationProvider.getApplicationContext(),
+        footballDataBase = Room.inMemoryDatabaseBuilder( // inMemoryDatabaseBuilder temporary database for testing
+                ApplicationProvider.getApplicationContext(), // ApplicationProvider reference to the Android framework
                 FootballDataBase.class
         ).build();
     }
