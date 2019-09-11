@@ -31,9 +31,13 @@ public class TestUtil {
 
     public static final List<Competitions> TEST_COMPETITIONS_LIST = Collections.unmodifiableList(
             new ArrayList<Competitions>() {{
-                add(new Competitions(1, "Bundesliga", TIMESTAMP_1));
+                add(new Competitions(2002, "Bundesliga"));
             }}
     );
+
+    public static final List<Competitions> COMPETITIONS_LIST =
+            new ArrayList<>(TestUtil.TEST_COMPETITIONS_LIST);
+
 
     //Table data
     public static final Table TEST_TABLE_DATA_1 = new Table(1,

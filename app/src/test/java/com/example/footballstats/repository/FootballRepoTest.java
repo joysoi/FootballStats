@@ -85,7 +85,6 @@ public class FootballRepoTest {
 
     /*
         verify the correct method is called
-        confirm that the observer is triggered
         confirm that new rows are being inserted
      */
     @Test
@@ -95,7 +94,7 @@ public class FootballRepoTest {
         final List<Long> insertedRowsList = new ArrayList<>();
         insertedRowsList.add(insertedRow);
         final long[] returnedData = new long[insertedRowsList.size()];
-        when(footballDao.insertCompetitions(any(Competitions[].class)))
+        when(footballDao.insertCompetitions(any(Competitions.class)))
                 .thenReturn(returnedData);
 
         //Act
@@ -103,9 +102,10 @@ public class FootballRepoTest {
 
 
         //Assert
-        verify(footballDao).insertCompetitions(any(Competitions[].class));
+        verify(footballDao, atLeast(1)).insertCompetitions(any(Competitions.class));
         verifyNoMoreInteractions(footballDao);
 
+        System.out.println("Returned value: " + Arrays.toString(returnedValue));
         assertEquals(COMPETITIONS_LIST.toArray(returnedValue), returnedValue);
 
     }
@@ -113,7 +113,7 @@ public class FootballRepoTest {
 
     /*
         insert Competition
-        return Failure
+        return Failure (-1)
      */
     @Test
     void insertCompetition_returnFailure() throws Exception {
@@ -122,14 +122,14 @@ public class FootballRepoTest {
         final List<Long> insertedRowList = new ArrayList<>();
         insertedRowList.add(insertedRow);
         final long[] returnedData = new long[insertedRowList.size()];
-        when(footballDao.insertCompetitions(any(Competitions[].class)))
+        when(footballDao.insertCompetitions(any(Competitions.class)))
                 .thenReturn(returnedData);
 
         //Act
         Competitions[] returnedValue = footballRepo.insertCompetitions(COMPETITIONS_LIST).blockingFirst();
 
         //Assert
-        verify(footballDao).insertCompetitions(any(Competitions[].class));
+        verify(footballDao,atLeast(1)).insertCompetitions(any(Competitions.class));
         verifyNoMoreInteractions(footballDao);
 
         assertNotEquals(insertedRow, returnedValue);
@@ -140,7 +140,6 @@ public class FootballRepoTest {
 
     /*
         verify the correct method is called
-        confirm that the observer is triggered
         confirm that new rows are being inserted
      */
     @Test
