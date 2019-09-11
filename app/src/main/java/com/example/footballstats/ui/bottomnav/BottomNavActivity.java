@@ -59,7 +59,6 @@ public class BottomNavActivity extends DaggerAppCompatActivity implements Bottom
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        //todo implement throttleFirst()
         switch (item.getItemId()) {
             case R.id.navigation_standings:
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.navigation_standings, bundle, navOptions());

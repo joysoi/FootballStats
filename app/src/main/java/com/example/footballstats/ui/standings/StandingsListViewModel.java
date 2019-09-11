@@ -37,4 +37,13 @@ public class StandingsListViewModel extends ViewModel {
     }
 }
 
-
+//    // Arrange
+//    Note note = new Note(TestUtil.TEST_NOTE_1);
+//    LiveDataTestUtil<Note> liveDataTestUtil = new LiveDataTestUtil<>();
+//
+//// Act
+//        noteViewModel.setNote(note);
+//                Note observedNote = liveDataTestUtil.getValue(noteViewModel.observeNote());
+//
+//                // Assert
+//                assertEquals(note, observedNote);
