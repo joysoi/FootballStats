@@ -32,18 +32,17 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(InstantExecutorExtension.class)
 public class StandingsListViewModelTest {
+
     //system under test StandingsListViewModel
     private StandingsListViewModel standingsListViewModel;
 
-    public static final List<Competitions> COMPETITIONS_LIST =
-            new ArrayList<>(TestUtil.COMPETITIONS_LIST);
 
     @Mock
     FootballRepo footballRepo;
 
     @BeforeEach
     private void init() {
-        MockitoAnnotations.initMocks(this);
+        footballRepo = mock(FootballRepo.class);
         standingsListViewModel = new StandingsListViewModel(footballRepo);
     }
 
