@@ -14,7 +14,7 @@ Used:<br>
 Screens:
 <br>
 <p align="left">
-<img src=""/>
-<img src=""/>
-<img src=""/>
+<img src="main_screen.jpg"/>
+<img src="standings_screen.jpg"/>
+<img src="scorrers_sreen.jpg"/>
 </p>
